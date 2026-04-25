@@ -10,7 +10,7 @@ metadata:
 
 # Technical SEO
 
-> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/docs/mcp).
+> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/en/mcp).
 
 Workflows for diagnosing and fixing technical SEO issues using the thatseoagent MCP.
 

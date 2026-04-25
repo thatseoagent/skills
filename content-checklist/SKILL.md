@@ -10,7 +10,7 @@ metadata:
 
 # Content Checklist
 
-> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/docs/mcp).
+> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/en/mcp).
 
 Nothing gets published without passing every item in this list. Run the sections in order — each builds on the one before it. After the manual checks, run the tools in the final section against the live or staging URL.
 

@@ -10,7 +10,7 @@ metadata:
 
 # Audit Cadence
 
-> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/docs/mcp).
+> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/en/mcp).
 
 A structured 14-day audit cycle for ongoing SEO monitoring. Run this sequence to catch issues before they compound — ranking drops, index coverage errors, cannibalization, and traffic anomalies all move faster than monthly reviews can catch.
 

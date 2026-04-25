@@ -10,7 +10,7 @@ metadata:
 
 # AI Visibility
 
-> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/docs/mcp).
+> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/en/mcp).
 
 Workflows for improving how your brand appears in AI-generated answers (ChatGPT, Perplexity, Google AI Overviews, Claude, Gemini) using the thatseoagent MCP.
 

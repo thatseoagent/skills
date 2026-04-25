@@ -10,7 +10,7 @@ metadata:
 
 # GSC Insights
 
-> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/docs/mcp).
+> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/en/mcp).
 
 Workflows for extracting actionable insights from Google Search Console data using the thatseoagent MCP.
 

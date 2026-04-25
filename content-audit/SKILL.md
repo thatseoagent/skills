@@ -10,7 +10,7 @@ metadata:
 
 # Content Audit
 
-> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/docs/mcp).
+> **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/en/mcp).
 
 Workflows for analyzing and improving on-page SEO, content quality, and structured data using the thatseoagent MCP.
 
