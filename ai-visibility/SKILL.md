@@ -32,11 +32,13 @@ This skill audits **L1 and L4** — the layers measurable directly from your sit
 
 ## GEO Score Audit
 
-Measure how optimized a page is for AI citation — the most actionable on-site AI visibility metric.
+Measure content signals correlated with AI citation — a directional heuristic based on available research.
 
-**When to use:** User wants to know why their content isn't appearing in AI answers, or wants a baseline before making changes.
+**When to use:** User wants a structured baseline of on-site content and technical factors before making changes.
 
 **Tool:** `seo_geo_score`
+
+**Important caveat:** No AI platform (Google, OpenAI, Anthropic, Perplexity) publishes a citation scoring standard. This score measures proxy signals — structured data, content structure, E-E-A-T signals, crawler access — that peer-reviewed research (Princeton KDD 2024) found correlated with higher inclusion in AI-generated answers. A higher score means you've improved measurable factors; it does not guarantee AI citation.
 
 **What it measures (10 categories):**
 - Structured Data — schema markup that helps AI parse your content
@@ -50,9 +52,7 @@ Measure how optimized a page is for AI citation — the most actionable on-site 
 - Freshness Signals — publication dates, timestamps, recent content
 - Query Optimization — how well the page matches conversational queries
 
-**Target score:** 70+/100 for competitive AI citation likelihood.
-
-**Interpreting results:** The tool returns per-category scores with specific failed checks and recommendations. Fix the lowest-scoring categories with the highest weight first.
+**Interpreting results:** The tool returns per-category scores with specific failed checks and recommendations. Fix the lowest-scoring categories with the highest weight first. Re-run monthly and pair with manual testing (run target queries in ChatGPT, Perplexity, and Google AI Overviews to see if your content appears).
 
 ## E-E-A-T Score Audit
 
@@ -76,7 +76,7 @@ Measure the Experience, Expertise, Authoritativeness, and Trustworthiness signal
 
 ## llms.txt Check
 
-Audit and generate the site's `/llms.txt` file — the emerging standard for AI crawler guidance.
+Audit and generate the site's `/llms.txt` file — a proposed convention for AI crawler guidance.
 
 **When to use:** User wants to verify, improve, or create an `/llms.txt` file to improve AI crawler access and citation rates.
 
@@ -102,7 +102,7 @@ When the file is missing OR scores below 40/100, the tool automatically fetches 
 4. Copy the generated content → save as `/llms.txt` at the site root
 5. Run `seo_robots_validator` to confirm AI bots (GPTBot, ClaudeBot, PerplexityBot) are not blocked
 
-**What llms.txt is:** An emerging convention (similar to `robots.txt`) that gives AI systems a curated summary of what your site is about, what content is most important, and how you want your brand described. Adoption is growing across AI-forward brands and is cited as a positive signal by Perplexity and Claude crawlers.
+**What llms.txt is:** A format proposed in 2024 that gives AI systems a curated summary of your site's content and structure. None of the major AI platforms (Google, OpenAI, Anthropic, Perplexity) have publicly confirmed they use it for citation decisions. Add it if it's easy — but don't prioritize it over inline citations, structured data, and AI crawler access, which have stronger evidence behind them.
 
 ## AI Visibility Score
 
@@ -124,7 +124,7 @@ Get a composite 0–100 score measuring a site's overall AI visibility across th
 - Passed and failed checks across both layers
 - Prioritized action items ranked by estimated impact
 
-**Target score:** 70+ for strong AI citation candidacy. Below 40 means the brand is unlikely to appear in AI-generated answers for most queries.
+**Target score:** 70+ indicates strong on-site signals. Below 40 suggests significant gaps in entity establishment or content structure. These thresholds are directional — no platform has validated them against actual citation rates.
 
 **Quick self-test:** Ask ChatGPT *"What is [brand name]?"* — if the answer is vague, hedged, or wrong, L1 entity resolution is failing. That's the fastest proxy for a low score before running the tool.
 

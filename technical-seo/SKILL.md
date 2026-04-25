@@ -151,8 +151,9 @@ List, inspect, and submit sitemaps to Google Search Console.
 **Tools:**
 - `gsc_list_sitemaps` — list all submitted sitemaps with status and error counts
 - `gsc_get_sitemap` — get details on a specific sitemap (last downloaded, URLs submitted vs. indexed)
-- `gsc_submit_sitemap` — submit a new sitemap URL to GSC
 - `gsc_sitemap_url_inspection` — parse the sitemap and bulk-inspect every URL inside it against GSC
+
+**Note:** To submit a new sitemap to GSC, do it directly from the Google Search Console UI (Search Index → Sitemaps → Add a new sitemap).
 
 **Recommended workflow after a migration:**
 1. `gsc_list_sitemaps` — confirm the new sitemap is submitted
