@@ -2,7 +2,7 @@
 name: content-audit
 description: Content and on-page SEO audit skill for That SEO Agent MCP. Use this skill when the user asks about on-page optimization, content quality, readability, heading structure, word count, schema markup, or structured data. Triggers on tasks involving meta tags, title tags, content analysis, JSON-LD, or page-level SEO improvements.
 license: MIT
-compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com/dashboard/settings.
+compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
   version: "1.0.0"

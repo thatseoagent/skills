@@ -2,7 +2,7 @@
 name: audit-cadence
 description: Biweekly SEO audit cadence skill for That SEO Agent MCP. Use this skill when the user wants a structured, repeatable SEO monitoring routine — catching ranking drops, index issues, and keyword shifts before they compound. Triggers on tasks involving ongoing SEO monitoring, audit schedules, weekly or biweekly SEO reviews, or tracking changes over time.
 license: MIT
-compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com/dashboard/settings.
+compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
   version: "1.0.0"

@@ -2,7 +2,7 @@
 name: site-audit
 description: Full site audit, reporting, and task management skill for That SEO Agent MCP. Use this skill when the user asks for a complete SEO audit, wants to generate a shareable report, needs to track SEO action items, or wants an overview of a site's health across all dimensions. Triggers on tasks involving site-wide analysis, audit reports, SEO task lists, or overall site health checks.
 license: MIT
-compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com/dashboard/settings.
+compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
   version: "1.1.0"

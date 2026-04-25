@@ -2,7 +2,7 @@
 name: technical-seo
 description: Technical SEO audit skill for That SEO Agent MCP. Use this skill when the user asks about crawlability, indexing, canonical tags, redirect chains, robots.txt, hreflang, security headers, sitemaps, or URL inspection. Triggers on tasks involving site crawls, indexing problems, technical errors, or crawl budget concerns.
 license: MIT
-compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com/dashboard/settings.
+compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
   version: "1.0.0"

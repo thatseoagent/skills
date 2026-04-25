@@ -2,7 +2,7 @@
 name: ai-visibility
 description: AI search visibility skill for That SEO Agent MCP. Use this skill when the user asks about appearing in ChatGPT, Perplexity, Google AI Overviews, Claude, or other AI-generated answers. Triggers on tasks involving GEO optimization, E-E-A-T signals, llms.txt, AI engine traffic, generative search, or brand visibility in AI systems.
 license: MIT
-compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com/dashboard/settings.
+compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
   version: "1.0.0"

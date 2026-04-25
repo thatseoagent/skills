@@ -2,7 +2,7 @@
 name: gsc-insights
 description: Google Search Console analysis skill for That SEO Agent MCP. Use this skill when the user asks about keyword performance, traffic drops, ranking opportunities, featured snippets, keyword cannibalization, or search trends. Triggers on tasks involving GSC data, search analytics, click-through rates, impressions, or organic search performance.
 license: MIT
-compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com/dashboard/settings.
+compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
   version: "1.0.0"

@@ -2,7 +2,7 @@
 name: content-checklist
 description: Pre-publish content checklist skill for That SEO Agent MCP. Use this skill when the user is about to publish a new article, blog post, or landing page and wants to verify it meets SEO and content quality standards before going live. Triggers on tasks involving content publishing, article review, SEO-optimized writing, schema validation, or pre-publish audits.
 license: MIT
-compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com/dashboard/settings.
+compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
   version: "1.0.0"
