@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.0.0"
+  version: "1.2.0"
 ---
 
 # GSC Insights
@@ -43,6 +43,8 @@ Identify statistically significant traffic drops and spikes — distinguish real
 4. Spikes (positive Z-score) may indicate viral content, news mentions, or seasonal demand worth capitalizing on.
 
 **Follow-up:** For drops, cross-reference the anomaly date with `gsc_inspect_url` on the affected pages to check indexing status.
+
+**Catch drops earlier:** Pair this with a `gsc_search_analytics` call using `dataState: "all"` for the last 2–3 days. Fresh (still-incomplete) data surfaces a developing drop before it's finalized — so you can react days sooner than the anomaly detector, which works on finalized data.
 
 
 ## Keyword Trend Analysis
@@ -103,7 +105,7 @@ Find queries in positions 2–5 that are prime candidates for a featured snippet
 3. Queries phrased as questions ("how to", "what is", "why does") are highest priority.
 4. Review the current page for a direct, concise answer at the top of the relevant section.
 
-**Implementation:** Add a direct answer (40–60 words) immediately after the question heading. Use the exact query phrasing in the heading. Add FAQ schema if multiple Q&A pairs exist on the page.
+**Implementation:** Add a direct answer (40–60 words) immediately after the question heading. Use the exact query phrasing in the heading. If you ship multiple Q&A pairs on the page, render them with semantic HTML (`<details>`/`<summary>`) — Google deprecated FAQ rich results in May 2026 and the Ahrefs 2026 causal study found schema alone does not lift AI citations.
 
 
 ## SERP Features Gap
@@ -117,7 +119,24 @@ Identify missing structured data that's costing rich result eligibility on top-r
 2. The tool analyzes top-ranking pages and compares their current schema against what's eligible for the SERP features available in their niche.
 3. Returns a prioritized list of missing schema types with estimated CTR uplift.
 
-**Common gaps:** FAQ schema, HowTo schema, Review/AggregateRating, Product schema with pricing. Use `seo_schema_generator` (content-audit skill) to generate the correct JSON-LD.
+**Common gaps with active rich-result support:** Product schema with pricing/SKU, Review/AggregateRating, Recipe, VideoObject, Event, LocalBusiness, JobPosting, NewsArticle. Use `seo_schema_generator` (content-audit skill) to generate the correct JSON-LD.
+
+**No longer recommended as SERP gap candidates:**
+- FAQPage — Google fully deprecated FAQ rich results on May 7, 2026 (only gov/health sites still get them). Rich Results Test drops FAQ support in June 2026; Search Console API in August 2026.
+- HowTo — desktop rich results removed September 2023.
+
+
+## More Search Lenses
+
+Focused analyses on top of search analytics — each slices the same GSC data through a different lens. Reach for them when the user's question matches the angle.
+
+- **`gsc_branded_split`** — branded vs non-branded traffic split (pass `brandTerms`). Use when the user asks how much traffic is brand recognition vs genuine discovery. High branded share → growth depends on non-branded queries; low → brand-awareness opportunity.
+- **`gsc_discover_performance`** — Google Discover traffic by page, separate from web search. Use for content/news sites asking about Discover, or to explain traffic that isn't from search queries.
+- **`gsc_search_appearance`** — performance broken down by SERP feature (rich result, video, AMP, review snippet…). Use to see which rich results actually drive clicks.
+- **`gsc_device_gap`** — queries where the site ranks worse on mobile than desktop. Use when mobile traffic underperforms or for a mobile-first ranking review.
+- **`gsc_country_opportunity`** — countries with high impressions but low CTR — untapped international demand. Use for international SEO prioritization.
+- **`gsc_page_query_map`** — maps each top page to the queries it ranks for. Use to spot pages that lack focus (ranking for many unrelated intents) vs well-targeted pages.
+- **`gsc_page_changes`** — pages that newly started, or stopped, getting impressions between two periods. Page-level companion to `gsc_detect_lost_queries`; use to catch pages gained or lost after a deploy or migration.
 
 
 ## Raw Search Analytics
@@ -129,9 +148,12 @@ Pull clicks, impressions, CTR, and position data for custom analysis.
 **Tool:** `gsc_search_analytics`
 
 **Key parameters:**
-- `siteUrl` — the GSC property (e.g., `https://example.com/`)
+- `siteUrl` — a bare domain (e.g. `example.com`), a URL-prefix property (`https://example.com/`), or a domain property (`sc-domain:example.com`). A bare domain is auto-resolved against the account's GSC properties (preferring `sc-domain:` when both exist) — you don't need to pass the exact format. This applies to every `gsc_*` tool in this skill.
 - `startDate` / `endDate` — ISO date strings
 - `dimensions` — `query`, `page`, `country`, `device` (can combine multiple)
 - `rowLimit` — up to 25,000 rows
+- `dataState` — `final` (default) returns only finalized data; `all` includes fresh, still-incomplete data from the last ~2 days. Use `dataState: "all"` for **early detection** of traffic drops before Google finalizes the numbers.
 
 **List available properties:** `gsc_list_properties` returns all GSC properties the API key has access to, with permission levels.
+
+**Don't have GSC access to a site?** GSC tools only work for properties the account owns. For an unverified site (e.g. a competitor), use the public/technical tools instead — `seo_analyze_page`, `pagespeed_insights`, `seo_crawlability_audit`, `seo_geo_score`, and `crawl_site` need no Google access.

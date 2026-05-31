@@ -62,9 +62,9 @@ Assess readability, depth, heading structure, and link density — signals that 
 
 ## Schema Detection
 
-Find all structured data on a page and validate it — JSON-LD, Microdata, and RDFa.
+Find all structured data on a page and validate it — JSON-LD, Microdata, and RDFa. Also flags **schema-content mismatches** (e.g. FAQPage JSON-LD on a page with no visible Q&A pattern, incomplete Product schema, HowTo without step content).
 
-**When to use:** User wants to audit their existing schema markup, or wants to know what rich results they're eligible for.
+**When to use:** User wants to audit their existing schema markup, wants to know what rich results they're eligible for, or wants to find schema that doesn't honestly describe the page.
 
 **Tool:** `seo_schema_detection`
 
@@ -72,13 +72,15 @@ Find all structured data on a page and validate it — JSON-LD, Microdata, and R
 - All schema types detected on the page
 - The full JSON-LD markup for each schema block
 - Validation issues (missing required properties, incorrect types)
+- **Mismatches**: schema types present in JSON-LD that the rendered DOM does not back up (e.g. FAQPage without `<details>`/`<summary>`/`<dl>` or question headings; Product without offers/price/sku or visible commerce signals; HowTo without an ordered step list)
+- A documented-feature stack check (`Article` + `Organization` + `BreadcrumbList`) — these are the types Google still rewards with documented rich results
 
-**Key insight from research:** Generic CMS-default schema (Article, Organization, BreadcrumbList with minimal attributes) can *hurt* AI citation rates (41.6% citation rate vs 59.8% for pages with no schema at all). Only attribute-rich schema — Product with pricing, Review with rating values, FAQ with full answer text — outperforms no schema.
+**Key insight from research:** The Ahrefs 2026 causal study (1,885 treated pages vs 4,000 controls) found JSON-LD schema produces no significant AI citation lift on AI Mode (+2.4%) or ChatGPT (+2.2%) and a small significant decline on Google AI Overviews (−4.6%). Schema should describe the page **honestly** — it does not function as an AI citation lever. Generic CMS-default schema or schema that lies about the page (FAQPage on product pages, etc.) is exactly the pattern that triggered Google's FAQ rich result deprecation in May 2026.
 
 **Audit questions to answer:**
-- Is the schema present? (`seo_schema_detection`)
+- Is the schema present and valid? (`seo_schema_detection`)
 - Does it have all required and recommended properties? (check against schema.org spec)
-- Is it attribute-rich or a bare-minimum stub? (stubs may be worse than nothing)
+- Does it **honestly describe** the rendered content? (review the `mismatches` field — schema that doesn't match the DOM is the abuse pattern platforms punish)
 
 ## Schema Generation
 
@@ -89,22 +91,22 @@ Generate valid JSON-LD structured data markup ready to paste into a page.
 **Tool:** `seo_schema_generator`
 
 **Supported schema types (examples):**
-- `FAQPage` — for Q&A content, featured snippet eligibility
-- `HowTo` — for step-by-step guides
-- `Product` — with pricing, availability, ratings
-- `Review` / `AggregateRating` — customer reviews
 - `Article` / `BlogPosting` — with author, datePublished, dateModified
 - `Organization` — with sameAs entity disambiguation links
+- `BreadcrumbList` — for site hierarchy
+- `Product` — with pricing, availability, ratings
+- `Review` / `AggregateRating` — customer reviews
 - `Person` — for author bio pages
 - `LocalBusiness` — for local SEO
-- `BreadcrumbList` — for site hierarchy
+- `FAQPage` — only generate when the page is genuinely a FAQ with visible Q&A in the DOM. Google deprecated FAQ rich results on May 7, 2026 for non-gov/health sites; some other engines (e.g. Bing) still parse it
+- `HowTo` — only generate when the page has visible ordered steps. Google removed HowTo desktop rich results in September 2023
 
 **Workflow:**
 1. Run `seo_schema_detection` to see what's already on the page.
 2. Identify missing or incomplete schema types.
 3. Run `seo_schema_generator` with the schema type and the page's data.
 4. Paste the generated JSON-LD into the `<head>` of the page.
-5. Validate with Google's Rich Results Test.
+5. Validate with Google's Rich Results Test (note: FAQ support is removed in June 2026 — use the test only for types that still produce documented rich results).
 
 **Priority schema by page type:**
 
@@ -112,7 +114,7 @@ Generate valid JSON-LD structured data markup ready to paste into a page.
 |-----------|--------------|
 | Homepage | `Organization` with `sameAs` links |
 | Blog post | `Article` with `author`, `datePublished`, `dateModified` |
-| FAQ / Support | `FAQPage` |
+| FAQ / Support | `FAQPage` (only if the page is genuinely a FAQ — Google deprecated FAQ rich results May 2026; use semantic HTML `<details>`/`<summary>` as the primary representation) |
 | Product page | `Product` with pricing and `AggregateRating` |
 | Author bio | `Person` with credentials |
 | How-to guide | `HowTo` with step-by-step markup |

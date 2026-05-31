@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Audit Cadence
@@ -34,6 +34,15 @@ ga4_ai_traffic            → sessions arriving from ChatGPT, Perplexity, Gemini
 - Any query losing more than 20% of clicks week-over-week → investigate immediately
 - New queries entering the top 20 → check if existing content covers them or if a new page is needed
 - AI traffic trend — is it growing, flat, or declining?
+
+**Early-warning tip:** Add a second `gsc_search_analytics` call with `dataState: "all"` over the last 2–3 days. It includes fresh, still-incomplete data so a developing drop shows up days before it's finalized — turning the biweekly pulse into an early-warning signal.
+
+**GA4 reporting helpers** (use to make `ga4_run_report` precise and outcome-focused):
+- `ga4_key_events` — list the events the business marked as conversions, so "conversions by channel" reflects what actually matters for this property.
+- `ga4_metadata` — discover the dimensions and metrics available for the property, **including its custom ones**, before composing a report (no more guessing field names).
+- `ga4_custom_definitions` — inspect the property's custom dimensions/metrics and their configuration.
+- `ga4_pivot_report` — cross-tabulate metrics (e.g. channel × date, source × landing page) for clearer comparative views than a flat report.
+- If `ga4_run_report` rejects a dimension/metric combination, it now returns which field is incompatible — fix the field and re-run.
 
 ---
 

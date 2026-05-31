@@ -32,12 +32,13 @@ Nothing gets published without passing every item in this list. Run the sections
 
 ## Schema markup
 
-- [ ] FAQPage JSON-LD included if the article answers 3+ distinct questions
-- [ ] Each FAQ answer is self-contained — it must work as a standalone answer without surrounding context
 - [ ] Article schema includes: `headline`, `datePublished`, `dateModified`, `author` (with `@type: Person`), `publisher`
+- [ ] `Organization` schema with 2+ `sameAs` URLs (LinkedIn, Wikidata, etc.) — entity disambiguation for AI
+- [ ] `BreadcrumbList` schema for hierarchy (still triggers Google rich results)
 - [ ] For comparison or "best of" articles: `ItemList` schema with each option as a `ListItem`
-- [ ] For how-to content: `HowTo` schema with numbered steps
-- [ ] Validate all schema with Google Rich Results Test before publishing — fix any errors
+- [ ] If the page is genuinely a FAQ, use semantic HTML (`<details>`/`<summary>` or `<dl>`) — FAQPage rich results were deprecated by Google on May 7, 2026 for non-gov/health sites, and the Ahrefs 2026 causal study found JSON-LD does not lift AI citations. Add FAQPage JSON-LD only if it honestly describes the page (some engines like Bing still parse it)
+- [ ] For how-to content: visible step pattern (`<ol>` with steps, or "Step N" headings). HowTo rich results were removed from desktop in September 2023 — schema alone won't trigger them
+- [ ] Validate `Article`, `Product`, `Organization`, `BreadcrumbList` schema with Google's Rich Results Test before publishing (note: Rich Results Test drops FAQ support in June 2026)
 
 ---
 

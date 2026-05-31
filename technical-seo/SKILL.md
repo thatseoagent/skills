@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Technical SEO
@@ -126,6 +126,17 @@ Check a single URL's indexing status, coverage state, mobile usability, and last
 **Bulk inspection:** For 2–200 URLs at once, use `gsc_bulk_url_inspection`. Results are grouped by coverage state for easy triage.
 
 
+## Rich Results
+
+See the rich result types Google actually detected on a page — and the structured-data issues blocking them.
+
+**When to use:** User added schema markup and wants to confirm Google sees it, or is debugging why a page isn't getting rich results despite having markup.
+
+**Tool:** `gsc_rich_results`
+
+**Returns:** The detected rich result types (Product, Review, FAQ, Breadcrumb, etc.) with a verdict per type and any per-item issues (error/warning + message). This is Google's own detection from URL inspection — more authoritative than `gsc_serp_features_gap`, which infers gaps from rankings. Pair them: `gsc_serp_features_gap` to find where schema is missing, `gsc_rich_results` to verify it once added.
+
+
 ## Index Coverage Analysis
 
 Understand why pages aren't getting indexed across a large section of the site.
@@ -140,6 +151,17 @@ Understand why pages aren't getting indexed across a large section of the site.
 - Inspect a manual list of URLs
 
 **Output:** URLs grouped by coverage state, with counts — so you can see at a glance how many pages are indexed, excluded, or not yet discovered.
+
+
+## Crawl Freshness
+
+Find indexed pages Google hasn't crawled in a long time — they may be serving stale content.
+
+**When to use:** User updated content but rankings haven't moved, or wants to know which pages Google is seeing an outdated version of.
+
+**Tool:** `gsc_crawl_freshness`
+
+**What it does:** Inspects the site's sitemap URLs (auto-discovered from GSC) and ranks pages by oldest last-crawl date. Pages crawled long ago are candidates to refresh and re-promote (internal links) to prompt a re-crawl.
 
 
 ## Sitemap Management

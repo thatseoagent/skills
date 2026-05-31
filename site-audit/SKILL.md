@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Site Audit
@@ -56,10 +56,12 @@ Get a complete SEO audit across 18+ dimensions — performance, technical, conte
 **Cache behavior:** Results are cached for 7 days. If the audit is fresh, it returns immediately. If stale or missing, it triggers a background refresh — call again in ~60 seconds to get results.
 
 **Parameters:**
-- `siteUrl` (optional) — domain or GSC property URL (e.g. `example.com`). If omitted, uses your first registered site.
+- `siteUrl` (optional) — a bare domain (e.g. `example.com`), a URL-prefix property (`https://example.com/`), or a domain property (`sc-domain:example.com`). A bare domain is auto-resolved against the account's GSC properties — you don't need the exact format. If omitted, uses your first registered site.
 - `ga4PropertyId` (optional) — pass when prompted to resolve a GA4 disambiguation.
 
-**Requires:** The site must be registered in the thatseoagent dashboard and have its GSC/GA4 connections configured for full data coverage.
+**Auditing a site you don't have GSC/GA4 access to:** This works. The technical/public checks — PageSpeed, on-page SEO, schema, crawlability, robots/llms.txt, security headers, E-E-A-T, GEO, and the site crawl — run for any reachable URL with no Google connection required. Only the GSC (search analytics, indexing) and GA4 (traffic) sections need access to that specific property. When they can't run, the audit **declares them explicitly** with a "Google data not available" note listing what was skipped and why — instead of silently dropping those sections. So you can audit a competitor or a prospect's site and still get the full technical/content picture.
+
+**For full data coverage:** Register the site in the thatseoagent dashboard and connect its GSC/GA4 properties — that unlocks the search and traffic sections on top of the public checks.
 
 
 ## All-Properties Health Check

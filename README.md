@@ -1,6 +1,6 @@
 # That SEO Agent — Skills
 
-44 SEO tools for any MCP-compatible AI agent. Connects to Google Search Console, GA4, PageSpeed Insights, and your site's technical layer via the Model Context Protocol.
+57 SEO tools for any MCP-compatible AI agent. Connects to Google Search Console, GA4, PageSpeed Insights, and your site's technical layer via the Model Context Protocol.
 
 ## Setup
 

@@ -102,7 +102,7 @@ When the file is missing OR scores below 40/100, the tool automatically fetches 
 4. Copy the generated content → save as `/llms.txt` at the site root
 5. Run `seo_robots_validator` to confirm AI bots (GPTBot, ClaudeBot, PerplexityBot) are not blocked
 
-**What llms.txt is:** A format proposed in 2024 that gives AI systems a curated summary of your site's content and structure. None of the major AI platforms (Google, OpenAI, Anthropic, Perplexity) have publicly confirmed they use it for citation decisions. Add it if it's easy — but don't prioritize it over inline citations, structured data, and AI crawler access, which have stronger evidence behind them.
+**What llms.txt is:** A format proposed by Jeremy Howard / Answer.AI in September 2024 that gives AI systems a curated summary of your site's content and structure. None of the major AI platforms (Google, OpenAI, Anthropic, Perplexity) have publicly confirmed they use it for citation decisions. Google's official AI Optimization Guide (December 2025) explicitly tells site owners they can **ignore** AI-specific markup files. Add it only if a specific partner integration requests it — do not prioritize it over inline citations, content quality, and AI crawler access, which have stronger evidence behind them.
 
 ## AI Visibility Score
 
@@ -114,7 +114,7 @@ Get a composite 0–100 score measuring a site's overall AI visibility across th
 
 **What it measures:**
 
-- **L1 Entity Establishment (Knowledge Graph mechanism)** — Wikidata/Wikipedia presence, Google Knowledge Panel, schema markup (`Organization`, `LocalBusiness`, `Person`, `FAQPage`), directory listing consistency, brand name disambiguation. This is a **gating step, not a ranking step**: AI resolves whether your entity exists before it retrieves anything. A failed L1 limits every other layer.
+- **L1 Entity Establishment (Knowledge Graph mechanism)** — Wikidata/Wikipedia presence, Google Knowledge Panel, schema markup (`Organization`, `LocalBusiness`, `Person`, `BreadcrumbList`), directory listing consistency, brand name disambiguation. This is a **gating step, not a ranking step**: AI resolves whether your entity exists before it retrieves anything. A failed L1 limits every other layer. (Note: `FAQPage` was previously listed here — removed after the May 2026 Google deprecation and the Ahrefs 2026 causal study showing no AI citation lift from schema alone.)
 - **L4 Informational Citation (Retrieval mechanism)** — content structure for AI extraction, AI bot access, structured data quality, content density, freshness signals. Research across 1.2M ChatGPT responses shows 44.2% of citations come from the first 30% of a page. An 800-word page gets 50%+ grounding coverage from AI; a 4,000-word page gets just 13%.
 
 **Why L2 and L3 are off-tool:** L2 (Entity Depth — what AI "knows" about you from training) and L3 (Category Citation — editorial listicles and review sites) require off-site investment. Use `entity_mentions` for a proxy read on L2 footprint.
