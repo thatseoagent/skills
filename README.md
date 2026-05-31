@@ -1,10 +1,25 @@
+<p align="center">
+  <img src="assets/icon-512.png" alt="That SEO Agent" width="96" height="96">
+</p>
+
 # That SEO Agent — Skills
 
 57 SEO tools for any MCP-compatible AI agent. Connects to Google Search Console, GA4, PageSpeed Insights, and your site's technical layer via the Model Context Protocol.
 
-## Setup
+## Install as a plugin (Claude Code & Claude Cowork)
 
-Add to your MCP client's config:
+The fastest path. Bundles all 7 skills plus the That SEO Agent MCP server, and signs you in with OAuth in your browser — **no API key to paste**.
+
+```
+/plugin marketplace add thatseoagent/skills
+/plugin install thatseoagent@thatseoagent-skills
+```
+
+On enable, your browser opens to authenticate with That SEO Agent. Tokens are stored securely and refreshed automatically. Skills are invoked automatically by Claude, or explicitly as `/thatseoagent:site-audit`, `/thatseoagent:gsc-insights`, etc.
+
+## Manual MCP setup (other clients)
+
+If you're not using the plugin, add the server to your MCP client's config:
 
 ```json
 {
@@ -32,7 +47,11 @@ Three orchestration prompts are pre-loaded once the MCP is connected — no skil
 
 - **track_fixes** — Reviews open tasks, audits the site, and creates tasks for critical issues.
 
-## Audits & monitoring
+## Install skills individually (npx)
+
+Prefer one skill at a time, or not using the plugin? Each skill installs standalone:
+
+### Audits & monitoring
 
 - **site-audit** — Full site audit across 18+ dimensions, shareable client reports, and page-level task management.
 
@@ -46,7 +65,7 @@ Three orchestration prompts are pre-loaded once the MCP is connected — no skil
   npx skills add thatseoagent/skills/audit-cadence
   ```
 
-## Search & rankings
+### Search & rankings
 
 - **gsc-insights** — GSC analysis workflows: quick wins, traffic anomalies, trends, cannibalization, and featured snippet opportunities.
 
@@ -54,7 +73,7 @@ Three orchestration prompts are pre-loaded once the MCP is connected — no skil
   npx skills add thatseoagent/skills/gsc-insights
   ```
 
-## Technical SEO
+### Technical SEO
 
 - **technical-seo** — Crawlability, indexing, canonical tags, robots.txt, hreflang, security headers, and URL inspection.
 
@@ -62,7 +81,7 @@ Three orchestration prompts are pre-loaded once the MCP is connected — no skil
   npx skills add thatseoagent/skills/technical-seo
   ```
 
-## Content
+### Content
 
 - **content-audit** — On-page SEO, content quality, readability, schema detection, and structured data generation.
 
@@ -76,7 +95,7 @@ Three orchestration prompts are pre-loaded once the MCP is connected — no skil
   npx skills add thatseoagent/skills/content-checklist
   ```
 
-## AI visibility
+### AI visibility
 
 - **ai-visibility** — Content signals correlated with AI citation: E-E-A-T, structured data, crawler access, and entity presence. Based on peer-reviewed research — no official AI citation standard exists.
 
@@ -84,7 +103,7 @@ Three orchestration prompts are pre-loaded once the MCP is connected — no skil
   npx skills add thatseoagent/skills/ai-visibility
   ```
 
-## Install all skills at once
+### Install all skills at once
 
 ```
 npx skills add thatseoagent/skills
