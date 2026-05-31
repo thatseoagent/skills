@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Audit Cadence
@@ -38,6 +38,7 @@ ga4_ai_traffic            → sessions arriving from ChatGPT, Perplexity, Gemini
 **Early-warning tip:** Add a second `gsc_search_analytics` call with `dataState: "all"` over the last 2–3 days. It includes fresh, still-incomplete data so a developing drop shows up days before it's finalized — turning the biweekly pulse into an early-warning signal.
 
 **GA4 reporting helpers** (use to make `ga4_run_report` precise and outcome-focused):
+- `ga4_list_properties` — discover the account's GA4 properties and their IDs. Run this once during setup (or when `run_site_audit` / `ga4_run_report` reports a GA4 disambiguation) to get the `ga4PropertyId` to pass into the audit and report tools.
 - `ga4_key_events` — list the events the business marked as conversions, so "conversions by channel" reflects what actually matters for this property.
 - `ga4_metadata` — discover the dimensions and metrics available for the property, **including its custom ones**, before composing a report (no more guessing field names).
 - `ga4_custom_definitions` — inspect the property's custom dimensions/metrics and their configuration.
@@ -113,12 +114,14 @@ entity_mentions            → brand footprint check across Wikipedia, Wikidata,
 ### Day 14 — Report and tasks
 
 ```
-run_site_audit             → refresh the full audit baseline
-create_shared_report       → generate a shareable snapshot for stakeholders (only after all tools above are complete)
-create_task (×N)           → convert the top 3–5 findings into tracked tasks for the next cycle
+run_site_audit             → refresh the full audit baseline (cache-first: returns the last audit if <7 days old, otherwise triggers a background refresh — call again in ~60s)
+create_shared_report       → generate a shareable snapshot for stakeholders (only after all tools above are complete; the public link expires in 14 days)
+create_task (×N)           → convert the top 3–5 findings into tracked tasks for the next cycle (each call needs siteId + task; add url for page-level fixes)
 ```
 
 **Rule:** `create_shared_report` is always last. It captures whatever data is in the system at the moment it's called — run it before any other analysis tool and the report will be incomplete.
+
+**Task params reminder:** `create_task` requires `siteId` (the site UUID from the dashboard) plus `task`; `url` is optional for page-specific items. To list or close tasks, `get_tasks` takes `siteId`, and `complete_task` / `delete_task` take the per-task `taskId` returned by those calls.
 
 ---
 

@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Technical SEO
@@ -40,6 +40,8 @@ Compare the canonical tag in HTML against what Google has actually selected as t
 **When to use:** User suspects Google is ignoring their canonical declarations.
 
 **Tool:** `seo_canonical_audit`
+
+**Parameters:** `siteUrl` (the GSC property) and `inspectionUrl` (the page to audit). It needs GSC access because it reads Google's selected canonical from the URL Inspection API.
 
 **What it checks:**
 - The canonical tag declared in the page's `<head>`
@@ -97,6 +99,8 @@ Validate international SEO hreflang tags for correctness and bidirectional consi
 
 **Tool:** `seo_hreflang_validator`
 
+**Parameters:** `url` (the page to validate). Optional: `checkBidirectional` (default `true` — verifies referenced pages link back; slower but thorough), `checkAccessibility` (default `true` — checks every hreflang URL is reachable), and `sitemapUrl` (validate hreflang declared in a sitemap).
+
 **What it checks:**
 - Valid language and region codes (ISO 639-1 + ISO 3166-1)
 - Self-referencing hreflang tag on each page
@@ -117,13 +121,15 @@ Check a single URL's indexing status, coverage state, mobile usability, and last
 
 **Tool:** `gsc_inspect_url`
 
+**Parameters:** `siteUrl` (the GSC property) and `inspectionUrl` (the exact page URL to inspect). Both are required.
+
 **Returns:**
 - Coverage state: `SUBMITTED_AND_INDEXED`, `CRAWLED_CURRENTLY_NOT_INDEXED`, `DISCOVERED_CURRENTLY_NOT_INDEXED`, etc.
 - Last crawl date and time
 - Mobile usability status
 - Canonical URL as selected by Google
 
-**Bulk inspection:** For 2–200 URLs at once, use `gsc_bulk_url_inspection`. Results are grouped by coverage state for easy triage.
+**Bulk inspection:** For up to 200 URLs at once, use `gsc_bulk_url_inspection` — pass `siteUrl` and `inspectionUrls` (an array of full URLs, max 200). Results are grouped by coverage state for easy triage.
 
 
 ## Rich Results
@@ -133,6 +139,8 @@ See the rich result types Google actually detected on a page — and the structu
 **When to use:** User added schema markup and wants to confirm Google sees it, or is debugging why a page isn't getting rich results despite having markup.
 
 **Tool:** `gsc_rich_results`
+
+**Parameters:** `siteUrl` (the GSC property) and `inspectionUrl` (the page to check).
 
 **Returns:** The detected rich result types (Product, Review, FAQ, Breadcrumb, etc.) with a verdict per type and any per-item issues (error/warning + message). This is Google's own detection from URL inspection — more authoritative than `gsc_serp_features_gap`, which infers gaps from rankings. Pair them: `gsc_serp_features_gap` to find where schema is missing, `gsc_rich_results` to verify it once added.
 
@@ -145,12 +153,27 @@ Understand why pages aren't getting indexed across a large section of the site.
 
 **Tool:** `gsc_index_coverage_analysis`
 
-**Input options:**
-- Analyze URLs from GSC analytics (pages that have appeared in search)
-- Parse a sitemap and inspect all URLs in it
-- Inspect a manual list of URLs
+**Parameters:** `siteUrl` plus a required `source` (one of `analytics`, `sitemap`, or `urls`) that selects where the URLs come from. Optional: `sampleSize` (10–200, default 100), `startDate` / `endDate` (for the `analytics` source, default last 30 days), `sitemapUrl` (for the `sitemap` source — auto-discovered from GSC when omitted), and `urls` (the array for the `urls` source).
+
+**Input options (`source`):**
+- `analytics` — URLs from GSC analytics (pages that have appeared in search)
+- `sitemap` — parse a sitemap and inspect all URLs in it
+- `urls` — inspect a manual list passed in `urls`
 
 **Output:** URLs grouped by coverage state, with counts — so you can see at a glance how many pages are indexed, excluded, or not yet discovered.
+
+
+## Traffic by Indexing State
+
+Cross-reference your top-traffic pages against their live indexing state — to catch pages that earn search traffic but are no longer cleanly indexed.
+
+**When to use:** User wants to confirm their highest-value pages are still `SUBMITTED_AND_INDEXED`, or to spot traffic-earning URLs that have slipped into a "crawled, not indexed" / canonical-elsewhere state before the clicks disappear.
+
+**Tool:** `gsc_search_analytics_by_indexing_state`
+
+**Parameters:** `siteUrl`, plus a required `startDate` / `endDate` (`YYYY-MM-DD`) for the traffic window. Optional `topN` (top URLs by traffic to inspect, 1–100, default 20). It pulls the top pages from search analytics, then runs live URL inspection on each.
+
+**What it does:** Returns each top page alongside its current coverage state, so indexing regressions surface against the traffic they put at risk. Follow up on anything not `SUBMITTED_AND_INDEXED` with `gsc_inspect_url` for the full per-URL detail.
 
 
 ## Crawl Freshness
@@ -160,6 +183,8 @@ Find indexed pages Google hasn't crawled in a long time — they may be serving 
 **When to use:** User updated content but rankings haven't moved, or wants to know which pages Google is seeing an outdated version of.
 
 **Tool:** `gsc_crawl_freshness`
+
+**Parameters:** `siteUrl` is the only required input. Optional: `sitemapUrl` (auto-discovered from GSC when omitted), `sampleSize` (10–200 URLs to inspect, default 100), and `maxResults` (stalest pages to return, default 25).
 
 **What it does:** Inspects the site's sitemap URLs (auto-discovered from GSC) and ranks pages by oldest last-crawl date. Pages crawled long ago are candidates to refresh and re-promote (internal links) to prompt a re-crawl.
 
@@ -171,9 +196,9 @@ List, inspect, and submit sitemaps to Google Search Console.
 **When to use:** After a migration, after publishing new content, or to diagnose sitemap errors.
 
 **Tools:**
-- `gsc_list_sitemaps` — list all submitted sitemaps with status and error counts
-- `gsc_get_sitemap` — get details on a specific sitemap (last downloaded, URLs submitted vs. indexed)
-- `gsc_sitemap_url_inspection` — parse the sitemap and bulk-inspect every URL inside it against GSC
+- `gsc_list_sitemaps` — list all submitted sitemaps with status and error counts. Param: `siteUrl`.
+- `gsc_get_sitemap` — get details on a specific sitemap (last downloaded, URLs submitted vs. indexed). Params: `siteUrl` and `feedpath` (the full sitemap URL, e.g. `https://example.com/sitemap.xml`).
+- `gsc_sitemap_url_inspection` — parse the sitemap and bulk-inspect every URL inside it against GSC. Params: `siteUrl` and `sitemapUrl` (the sitemap's URL — note this differs from `gsc_get_sitemap`'s `feedpath`), plus optional `maxUrls` (default 100, max 200).
 
 **Note:** To submit a new sitemap to GSC, do it directly from the Google Search Console UI (Search Index → Sitemaps → Add a new sitemap).
 

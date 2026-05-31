@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # Site Audit
@@ -134,27 +134,38 @@ Track SEO action items as structured tasks tied to a specific site or page.
 **When to use:** After an audit, to convert recommendations into trackable tasks — for yourself or to assign to a team.
 
 **Tools:**
-- `get_tasks` — list all open and completed tasks for a site
-- `create_task` — add a new action item
-- `complete_task` — mark a task as done using its UUID
-- `delete_task` — permanently remove a task
+- `get_tasks` — list all open and completed tasks for a site (requires `siteId`)
+- `create_task` — add a new action item (requires `siteId` + `task`)
+- `complete_task` — mark a task as done using its `taskId`
+- `delete_task` — permanently remove a task using its `taskId`
+
+**Where `siteId` comes from:** every task tool is scoped to a site by its UUID (`siteId`). Get it from the site's page in the thatseoagent dashboard, or from a prior `get_tasks` call on that site. It is the site UUID, not the task UUID.
 
 **`create_task` parameters:**
+- `siteId` (required) — the site UUID from the dashboard
 - `task` (required) — free text description of the action item
 - `url` (optional) — page URL to associate the task with a specific page (e.g. `https://example.com/blog/post-1`). Omit for site-wide tasks.
 
+**`get_tasks` parameters:**
+- `siteId` (required) — the site UUID from the dashboard
+
+**`complete_task` / `delete_task` parameters:**
+- `taskId` (required) — the task UUID returned by `get_tasks` or `create_task` (this is the per-task UUID, not the `siteId`)
+
 **Examples:**
-- Site-wide task: `create_task task="Fix canonical conflicts across blog section"`
-- Page-level task: `create_task task="Rewrite title tag" url="https://example.com/pricing"`
+- Site-wide task: `create_task siteId="<site-uuid>" task="Fix canonical conflicts across blog section"`
+- Page-level task: `create_task siteId="<site-uuid>" task="Rewrite title tag" url="https://example.com/pricing"`
+- Mark done: `complete_task taskId="<task-uuid>"`
+- List tasks: `get_tasks siteId="<site-uuid>"`
 
 Tasks appear in the thatseoagent dashboard and at the end of any shareable report generated for the site.
 
 **Workflow after an audit:**
 1. Run `run_site_audit` — review recommendations.
-2. Run `create_task` for each high-priority fix, adding `url` when the issue is page-specific.
-3. When a fix is deployed, run `complete_task` with the task UUID.
+2. Run `create_task` for each high-priority fix — always pass `siteId`, and add `url` when the issue is page-specific.
+3. When a fix is deployed, run `complete_task` with the `taskId`.
 
-**Task format:** Each task has a `task` field (description), an optional `url` field (page association), and a `done` status. UUIDs are returned by `get_tasks` and `create_task`.
+**Task format:** Each task has a `task` field (description), an optional `url` field (page association), and a `done` status. Per-task UUIDs (used as `taskId` for `complete_task` / `delete_task`) are returned by `get_tasks` and `create_task`.
 
 
 ## Full Audit Workflow
@@ -178,6 +189,7 @@ Step 3 (sequential — only after Step 2 is fully complete):
 
 Step 4 (after sharing the report):
   create_task (×N)              → convert top recommendations into tracked tasks
+                                  (each call needs siteId + task; add url for page-level fixes)
 ```
 
 `create_shared_report` captures a snapshot of all data available when it runs — wait for Step 2 to complete before calling it.
