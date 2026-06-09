@@ -1,0 +1,8 @@
+{
+	"mcpServers": {
+		"thatseoagent": {
+			"type": "http",
+			"url": "https://thatseoagent.com/api/mcp"
+		}
+	}
+}

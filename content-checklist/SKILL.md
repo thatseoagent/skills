@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Content Checklist
@@ -35,7 +35,7 @@ Nothing gets published without passing every item in this list. Run the sections
 - [ ] Article schema includes: `headline`, `datePublished`, `dateModified`, `author` (with `@type: Person`), `publisher`
 - [ ] `Organization` schema with 2+ `sameAs` URLs (LinkedIn, Wikidata, etc.) — entity disambiguation for AI
 - [ ] `BreadcrumbList` schema for hierarchy (still triggers Google rich results)
-- [ ] For comparison or "best of" articles: `ItemList` schema with each option as a `ListItem`
+- [ ] For comparison or "best of" articles: present the options as a visible ranked `<ol>` or comparison table in the DOM (the `seo_schema_generator` tool has no `ItemList` type — don't request one)
 - [ ] If the page is genuinely a FAQ, use semantic HTML (`<details>`/`<summary>` or `<dl>`) — FAQPage rich results were deprecated by Google on May 7, 2026 for non-gov/health sites, and the Ahrefs 2026 causal study found JSON-LD does not lift AI citations. Add FAQPage JSON-LD only if it honestly describes the page (some engines like Bing still parse it)
 - [ ] For how-to content: visible step pattern (`<ol>` with steps, or "Step N" headings). HowTo rich results were removed from desktop in September 2023 — schema alone won't trigger them
 - [ ] Validate `Article`, `Product`, `Organization`, `BreadcrumbList` schema with Google's Rich Results Test before publishing (note: Rich Results Test drops FAQ support in June 2026)

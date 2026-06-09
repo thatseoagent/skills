@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # AI Visibility
@@ -114,7 +114,7 @@ Get a composite 0–100 score measuring a site's overall AI visibility across th
 
 **What it measures:**
 
-- **L1 Entity Establishment (Knowledge Graph mechanism)** — Wikidata/Wikipedia presence, Google Knowledge Panel, schema markup (`Organization`, `LocalBusiness`, `Person`, `BreadcrumbList`), directory listing consistency, brand name disambiguation. This is a **gating step, not a ranking step**: AI resolves whether your entity exists before it retrieves anything. A failed L1 limits every other layer. (Note: `FAQPage` was previously listed here — removed after the May 2026 Google deprecation and the Ahrefs 2026 causal study showing no AI citation lift from schema alone.)
+- **L1 Entity Establishment (Knowledge Graph mechanism)** — Wikidata presence, Google Knowledge Graph entity, `Organization`/`LocalBusiness` schema (with `name`, `url`, and `sameAs` to 2+ identity platforms), vertical directory listings, entity-name consistency across `og:site_name` and schema, and an `/llms.txt` file. This is a **gating step, not a ranking step**: AI resolves whether your entity exists before it retrieves anything. A failed L1 limits every other layer. (Note: `FAQPage` was previously listed here — removed after the May 2026 Google deprecation and the Ahrefs 2026 causal study showing no AI citation lift from schema alone.)
 - **L4 Informational Citation (Retrieval mechanism)** — content structure for AI extraction, AI bot access, structured data quality, content density, freshness signals. Research across 1.2M ChatGPT responses shows 44.2% of citations come from the first 30% of a page. An 800-word page gets 50%+ grounding coverage from AI; a 4,000-word page gets just 13%.
 
 **Why L2 and L3 are off-tool:** L2 (Entity Depth — what AI "knows" about you from training) and L3 (Category Citation — editorial listicles and review sites) require off-site investment. Use `entity_mentions` for a proxy read on L2 footprint.
@@ -133,7 +133,7 @@ Get a composite 0–100 score measuring a site's overall AI visibility across th
 - Add `Person` + `sameAs` schema to author bio pages — correlates with 3x higher AI appearance rates
 - Ensure consistent entity name across all platforms (no "Brand Inc." vs "Brand LLC" variations)
 - Move core content answers to the first 30% of each page
-- Keep key pages in the 800–1,500 word range for optimal AI grounding coverage
+- Keep key pages in the 600–1,800 word range for optimal AI grounding coverage (the tool's scored sweet spot)
 
 ## Entity Mentions Audit
 
@@ -190,5 +190,5 @@ Run through this checklist to cover the full L1/L4 baseline:
 - Move the core thesis to the first 30% of each page
 - Add a direct 1–2 sentence answer immediately after each question-based heading
 - Increase entity density: name specific tools, brands, people, data points
-- Target 800–1,500 words per page (the AI grounding budget favors concise, dense pages over long ones)
+- Target 600–1,800 words per page (the tool's scored grounding sweet spot — it favors concise, dense pages over long ones)
 - Refresh top pages at least monthly for ChatGPT/Perplexity citation recency signals
