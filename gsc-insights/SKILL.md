@@ -1,11 +1,11 @@
 ---
 name: gsc-insights
-description: Google Search Console analysis skill for That SEO Agent MCP. Use this skill when the user asks about keyword performance, traffic drops, ranking opportunities, featured snippets, keyword cannibalization, or search trends. Triggers on tasks involving GSC data, search analytics, click-through rates, impressions, or organic search performance.
+description: Extract insights from Google Search Console — quick wins, traffic-drop diagnosis, keyword trends, cannibalization, featured-snippet and SERP-feature opportunities, and query-to-content planning. Use when the user asks about keyword performance, CTR, impressions, or organic search behavior. Uses the thatseoagent MCP.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.2.1"
+  version: "1.3.0"
 ---
 
 # GSC Insights
@@ -30,6 +30,44 @@ Find high-impression keywords with low CTR — the fastest optimization opportun
 **What to do with the results:** Rewrite title tags and meta descriptions for the top 5–10 pages. The keyword is already getting eyes — the problem is the click.
 
 
+## From Data to Content Plan
+
+GSC tells you which queries exist and how you rank; this turns that raw list into a prioritized content plan. Use it after `gsc_detect_quick_wins`, `gsc_detect_trends`, or a raw `gsc_search_analytics` pull.
+
+### Map each query to a buyer stage
+
+The stage decides the content type and the CTA. Read the query's modifier:
+
+| Stage | Query modifiers | Best content response |
+|-------|-----------------|----------------------|
+| Awareness | "what is", "how to", "guide to", "why does" | Educational post / guide; answer-first, definition capsule |
+| Consideration | "best", "top", "vs", "alternatives", "comparison" | Comparison page or table; honest, structured |
+| Decision | "pricing", "reviews", "demo", "trial" | Product/pricing page; specifics, no fluff |
+| Implementation | "templates", "examples", "tutorial", "setup", "how to use" | Tutorial / template with standalone value |
+
+A page ranking for queries from *different* stages (visible in `gsc_page_query_map`) usually lacks focus — split or re-target it.
+
+### Prioritize the backlog
+
+Score each candidate topic/cluster; act on the top few per cycle. Weighting:
+
+| Factor | Weight | Signal to read |
+|--------|:------:|----------------|
+| Customer impact | 40% | How often the pain shows up in sales/support, LTV of who has it |
+| Content-market fit | 30% | Does it align with what the product solves and where it converts? |
+| Search potential | 20% | Impression volume + rank gap from `gsc_search_analytics` / quick-wins |
+| Resource cost | 10% | Expertise, data, and assets needed to make it genuinely better than the SERP |
+
+`Priority = 0.4·impact + 0.3·fit + 0.2·search + 0.1·(inverse) resource`. GSC feeds the "search potential" input; the other three come from the business, so ask for them rather than inferring.
+
+### Find demand GSC can't see yet
+
+GSC only shows queries you already get impressions for. For net-new topics, mine where the audience actually talks:
+- **Reddit / Quora** — `site:reddit.com [topic]`, `site:quora.com [topic]` for questions, misconceptions, and the exact language customers use.
+- **Sales/support transcripts** — recurring questions become FAQ and blog topics; objections become content to address proactively.
+- Cross-check any promising topic back in `gsc_search_analytics` — if impressions are already trickling in, it jumps up the priority list.
+
+
 ## Traffic Anomaly Detection
 
 Identify statistically significant traffic drops and spikes — distinguish real problems from noise.
@@ -44,7 +82,7 @@ Identify statistically significant traffic drops and spikes — distinguish real
 
 **Follow-up:** For drops, cross-reference the anomaly date with `gsc_inspect_url` on the affected pages to check indexing status.
 
-**Catch drops earlier:** Pair this with a `gsc_search_analytics` call using `dataState: "all"` for the last 2–3 days. Fresh (still-incomplete) data surfaces a developing drop before it's finalized — so you can react days sooner than the anomaly detector, which works on finalized data.
+**Catch drops earlier:** `gsc_detect_anomalies` now takes an optional `dataState` param. It defaults to `"final"` (data settled ~2–3 days ago). Pass `dataState: "all"` to include fresh, still-incomplete data and surface a developing drop days before it's finalized. One caveat: with `"all"` the most recent 1–2 days are partial, so the last data point can read as a dip — weight it as provisional, not a confirmed drop.
 
 
 ## Keyword Trend Analysis
@@ -87,7 +125,7 @@ Find keywords that dropped significantly between two periods — to diagnose ran
 
 **Workflow:**
 1. Run `gsc_detect_lost_queries` with `siteUrl` and the two comparison periods as four separate dates: `previousStartDate`, `previousEndDate`, `currentStartDate`, `currentEndDate` (all `YYYY-MM-DD`).
-2. The tool returns keywords where clicks dropped significantly in the current period vs the previous one. Tune with `minPreviousClicks` and `dropThresholdPercentage`.
+2. The tool returns keywords where clicks dropped significantly in the current period vs the previous one. Tune with `minPreviousClicks` and `dropThresholdPercentage`. The current period is read with fresh (`dataState: "all"`) data, so a developing loss is caught at the range boundary sooner — and because partial recent data only *adds* clicks to the current aggregate, it never manufactures a false "lost" keyword.
 3. Sort by absolute click loss to prioritize recovery effort.
 
 **Follow-up:** For each lost keyword, run `gsc_inspect_url` on the ranking page to check for indexing or canonical issues.
@@ -105,7 +143,7 @@ Find queries in positions 2–5 that are prime candidates for a featured snippet
 3. Queries phrased as questions ("how to", "what is", "why does") are highest priority.
 4. Review the current page for a direct, concise answer at the top of the relevant section.
 
-**Implementation:** Add a direct answer (40–60 words) immediately after the question heading. Use the exact query phrasing in the heading. If you ship multiple Q&A pairs on the page, render them with semantic HTML (`<details>`/`<summary>`) — Google deprecated FAQ rich results in May 2026 and the Ahrefs 2026 causal study found schema alone does not lift AI citations.
+**Implementation:** Add a direct answer (40–60 words) immediately after the question heading. Use the exact query phrasing in the heading. If you ship multiple Q&A pairs on the page, render them with semantic HTML (`<details>`/`<summary>`) — FAQ rich results are deprecated and schema alone does not lift AI citations.
 
 
 ## SERP Features Gap
@@ -122,8 +160,8 @@ Identify missing structured data that's costing rich result eligibility on top-r
 **Common gaps with active rich-result support:** Product schema with pricing/SKU, Review/AggregateRating, Recipe, VideoObject, Event, LocalBusiness, JobPosting, NewsArticle. Use `seo_schema_generator` (content-audit skill) to generate the correct JSON-LD.
 
 **No longer recommended as SERP gap candidates:**
-- FAQPage — Google fully deprecated FAQ rich results on May 7, 2026 (only gov/health sites still get them). Rich Results Test drops FAQ support in June 2026; Search Console API in August 2026.
-- HowTo — desktop rich results removed September 2023.
+- FAQPage — FAQ rich results are deprecated for non-gov/health sites.
+- HowTo — desktop rich results removed.
 
 
 ## More Search Lenses

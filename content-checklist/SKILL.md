@@ -1,11 +1,11 @@
 ---
 name: content-checklist
-description: Pre-publish content checklist skill for That SEO Agent MCP. Use this skill when the user is about to publish a new article, blog post, or landing page and wants to verify it meets SEO and content quality standards before going live. Triggers on tasks involving content publishing, article review, SEO-optimized writing, schema validation, or pre-publish audits.
+description: A pre-publish checklist verifying an article, blog post, or landing page meets SEO, content-quality, schema, and copy standards before it goes live. Use when the user is about to publish or wants a final pre-launch review. Uses the thatseoagent MCP.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.0.1"
+  version: "1.1.0"
 ---
 
 # Content Checklist
@@ -36,9 +36,9 @@ Nothing gets published without passing every item in this list. Run the sections
 - [ ] `Organization` schema with 2+ `sameAs` URLs (LinkedIn, Wikidata, etc.) — entity disambiguation for AI
 - [ ] `BreadcrumbList` schema for hierarchy (still triggers Google rich results)
 - [ ] For comparison or "best of" articles: present the options as a visible ranked `<ol>` or comparison table in the DOM (the `seo_schema_generator` tool has no `ItemList` type — don't request one)
-- [ ] If the page is genuinely a FAQ, use semantic HTML (`<details>`/`<summary>` or `<dl>`) — FAQPage rich results were deprecated by Google on May 7, 2026 for non-gov/health sites, and the Ahrefs 2026 causal study found JSON-LD does not lift AI citations. Add FAQPage JSON-LD only if it honestly describes the page (some engines like Bing still parse it)
-- [ ] For how-to content: visible step pattern (`<ol>` with steps, or "Step N" headings). HowTo rich results were removed from desktop in September 2023 — schema alone won't trigger them
-- [ ] Validate `Article`, `Product`, `Organization`, `BreadcrumbList` schema with Google's Rich Results Test before publishing (note: Rich Results Test drops FAQ support in June 2026)
+- [ ] If the page is genuinely a FAQ, use semantic HTML (`<details>`/`<summary>` or `<dl>`) as the primary representation — FAQ rich results are deprecated for non-gov/health sites and schema alone doesn't lift AI citations. Add FAQPage JSON-LD only if it honestly describes the page (some engines like Bing still parse it)
+- [ ] For how-to content: visible step pattern (`<ol>` with steps, or "Step N" headings) — schema alone won't trigger HowTo rich results
+- [ ] Validate `Article`, `Product`, `Organization`, `BreadcrumbList` schema with Google's Rich Results Test before publishing — for types that still produce documented rich results
 
 ---
 
@@ -61,6 +61,7 @@ Nothing gets published without passing every item in this list. Run the sections
 - [ ] No hedging language where a direct statement works — "X is" not "X might be"
 - [ ] Hook in the first sentence: a specific result, a number, or a direct claim
 - [ ] No keyword stuffing — primary keyword used naturally, not forced into every paragraph
+- [ ] No AI-tell patterns: em dashes, overused verbs (delve, leverage, utilize), overused adjectives (robust, comprehensive, seamless), boilerplate openers ("In today's..."), and empty intensifiers. See `references/ai-writing-detection.md` (Spanish copy: no em dashes at all)
 
 ---
 
@@ -93,3 +94,10 @@ pagespeed_insights     → confirm the page doesn't regress Core Web Vitals afte
 ```
 
 If any tool returns a failing check, fix it before the article goes live.
+
+---
+
+## References
+
+- **[AI Writing Detection](references/ai-writing-detection.md)** — em dashes and the word/phrase/structure patterns that make copy read as AI-generated, with human alternatives. Run the "Copy quality" AI-tell check against it.
+

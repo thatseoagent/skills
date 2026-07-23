@@ -1,7 +1,7 @@
 {
 	"name": "thatseoagent",
 	"displayName": "That SEO Agent",
-	"version": "1.0.0",
+	"version": "1.2.0",
 	"description": "57 SEO tools for Claude — Google Search Console, GA4, PageSpeed Insights, technical and content audits, and AI visibility.",
 	"author": {
 		"name": "That SEO Agent",

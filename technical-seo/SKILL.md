@@ -1,11 +1,11 @@
 ---
 name: technical-seo
-description: Technical SEO audit skill for That SEO Agent MCP. Use this skill when the user asks about crawlability, indexing, canonical tags, redirect chains, robots.txt, hreflang, security headers, sitemaps, or URL inspection. Triggers on tasks involving site crawls, indexing problems, technical errors, or crawl budget concerns.
+description: Diagnose and fix technical SEO — crawlability, indexing and coverage, canonical tags, redirect chains, robots.txt, hreflang, security headers, sitemaps, URL inspection, and crawl budget. Use for site crawls or indexing problems. Uses the thatseoagent MCP.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.1"
+  version: "1.2.0"
 ---
 
 # Technical SEO
@@ -112,6 +112,8 @@ Validate international SEO hreflang tags for correctness and bidirectional consi
 - Broken bidirectional links (page B doesn't return-reference page A)
 - Invalid codes like `en-UK` (correct is `en-GB`)
 
+`seo_hreflang_validator` checks the mechanics; for the *why* and the at-scale decisions it can't make for you — canonical vs hreflang conflicts, sitemap vs HTML placement, 20+ locale strategy, translation-quality thresholds, and the Next.js self-reference caveat — see **references/international-seo.md**.
+
 
 ## URL Inspection
 
@@ -129,7 +131,7 @@ Check a single URL's indexing status, coverage state, mobile usability, and last
 - Mobile usability status
 - Canonical URL as selected by Google
 
-**Bulk inspection:** For up to 200 URLs at once, use `gsc_bulk_url_inspection` — pass `siteUrl` and `inspectionUrls` (an array of full URLs, max 200). Results are grouped by coverage state for easy triage.
+**Bulk inspection:** For up to 200 URLs at once, use `gsc_bulk_url_inspection` — pass `siteUrl` and `inspectionUrls` (an array of full URLs, max 200). Results are grouped by coverage state for easy triage. URL Inspection is capped by Google at 2,000/day per site, so bulk inspection is bounded by a daily per-site **inspection budget** (default 500): URLs already inspected within the last 7 days are served from cache (no quota spent), and once the budget is reached the remaining URLs are returned as **deferred** (not failed) — re-run tomorrow or raise the budget. The output shows a budget meter and any deferred URLs.
 
 
 ## Rich Results
@@ -147,20 +149,20 @@ See the rich result types Google actually detected on a page — and the structu
 
 ## Index Coverage Analysis
 
-Understand why pages aren't getting indexed across a large section of the site.
+Understand why pages aren't getting indexed across a large section of the site — quota-efficiently.
 
 **When to use:** User reports that new pages aren't appearing in Google, or wants to audit indexing coverage across their sitemap.
 
 **Tool:** `gsc_index_coverage_analysis`
 
-**Parameters:** `siteUrl` plus a required `source` (one of `analytics`, `sitemap`, or `urls`) that selects where the URLs come from. Optional: `sampleSize` (10–200, default 100), `startDate` / `endDate` (for the `analytics` source, default last 30 days), `sitemapUrl` (for the `sitemap` source — auto-discovered from GSC when omitted), and `urls` (the array for the `urls` source).
+**How it works (cheapest source first):** instead of inspecting every URL, it separates *HTTP health* from *index state*:
+1. **HTTP health from a crawl — zero GSC quota.** 404s, redirects (3xx), and 5xx are HTTP facts, so they're read by fetching the URLs directly, never by URL Inspection.
+2. **Served pages from Search Analytics — one cheap, cached query.** Pages that already get impressions are indexed and serving, so they're skipped.
+3. **The "indexable gap" — only this spends inspection budget.** URLs that return 200 but Google isn't serving are the ones that actually need URL Inspection. This gap goes through the daily per-site inspection budget (default 500), so a large site can't burn the day's quota in one run. When the source is a `crawl`, the gap is prioritized by inbound internal links (the site's own importance signal) so the most-linked pages are inspected first; other sources keep sitemap/discovery order.
 
-**Input options (`source`):**
-- `analytics` — URLs from GSC analytics (pages that have appeared in search)
-- `sitemap` — parse a sitemap and inspect all URLs in it
-- `urls` — inspect a manual list passed in `urls`
+**Parameters:** `siteUrl`. Optional: `source` — `sitemap` (default — the property's submitted sitemap, auto-discovered when `sitemapUrl` is omitted), `crawl` (full BFS crawl from the homepage, for deeper audits), or `urls` (a manual list in `urls`); `sampleSize` (10–200, default 100); `startDate` / `endDate` for the served-pages window (default last 30 days); `force_refresh` (re-inspect even cached URLs, still bounded by the budget).
 
-**Output:** URLs grouped by coverage state, with counts — so you can see at a glance how many pages are indexed, excluded, or not yet discovered.
+**Output:** HTTP health counts (with example 404s/redirects), how many pages were skipped as already-served, the inspected gap **grouped by coverage state**, any URLs **deferred** because the daily budget was reached, and a budget meter. Nothing is silently truncated — a partial run is always reported as such.
 
 
 ## Traffic by Indexing State
@@ -198,7 +200,7 @@ List, inspect, and submit sitemaps to Google Search Console.
 **Tools:**
 - `gsc_list_sitemaps` — list all submitted sitemaps with status and error counts. Param: `siteUrl`.
 - `gsc_get_sitemap` — get details on a specific sitemap (last downloaded, URLs submitted vs. indexed). Params: `siteUrl` and `feedpath` (the full sitemap URL, e.g. `https://example.com/sitemap.xml`).
-- `gsc_sitemap_url_inspection` — parse the sitemap and bulk-inspect every URL inside it against GSC. Params: `siteUrl` and `sitemapUrl` (the sitemap's URL — note this differs from `gsc_get_sitemap`'s `feedpath`), plus optional `maxUrls` (default 100, max 200).
+- `gsc_sitemap_url_inspection` — parse the sitemap and bulk-inspect every URL inside it against GSC. Params: `siteUrl` and `sitemapUrl` (the sitemap's URL — note this differs from `gsc_get_sitemap`'s `feedpath`), plus optional `maxUrls` (default 100, max 200). Like all inspection paths it is bounded by the daily per-site inspection budget and the 7-day per-URL cache. For a large sitemap where you mainly want to find broken/unindexed pages, prefer `gsc_index_coverage_analysis` (sitemap source) — it gets 404s from a crawl for free and only inspects the gap.
 
 **Note:** To submit a new sitemap to GSC, do it directly from the Google Search Console UI (Search Index → Sitemaps → Add a new sitemap).
 

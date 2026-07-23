@@ -1,11 +1,11 @@
 ---
 name: ai-visibility
-description: AI search visibility skill for That SEO Agent MCP. Use this skill when the user asks about appearing in ChatGPT, Perplexity, Google AI Overviews, Claude, or other AI-generated answers. Triggers on tasks involving GEO optimization, E-E-A-T signals, llms.txt, AI engine traffic, generative search, or brand visibility in AI systems.
+description: Improve how a brand appears in AI-generated answers (ChatGPT, Perplexity, Google AI Overviews, Claude, Gemini). Use when the user asks about GEO/generative-engine optimization, AI citations, E-E-A-T signals, llms.txt, AI-crawler access, AI engine traffic, or brand entity visibility. Uses the thatseoagent MCP.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.0.1"
+  version: "1.2.0"
 ---
 
 # AI Visibility
@@ -30,6 +30,19 @@ AI visibility is a four-layer stack powered by three mechanisms. Each layer comp
 
 This skill audits **L1 and L4** — the layers measurable directly from your site. L2 and L3 require off-site investment (use `entity_mentions` for a proxy read on L2 footprint).
 
+> **Cited ≠ recommended.** L4 (being cited as a source) and L3 (being recommended onto the buyer's shortlist) are governed by different systems: citation by your content's usefulness, recommendation by web-wide consensus you mostly don't control. Conflating them leads emerging brands to publish self-ranked buyer's guides that get cited while the answer recommends competitors. Full breakdown, data, and the measurement ladder: **references/citations-vs-recommendations.md**.
+
+## Query Fan-Out
+
+Google's AI features (AI Overviews / AI Mode) don't just answer the query the user typed — they generate several related queries concurrently under the hood and synthesize across all of them. Google's own example: "how to fix lawns" fans out to herbicides, chemical-free removal, weed prevention, and more.
+
+**Implication for the audit:** targeting one page per exact keyword is weaker than covering the whole **topical cluster**. A page that comprehensively answers a parent topic (sub-questions included) is retrievable for the fan-out variants too.
+
+**How to work it with the MCP:**
+- `gsc_page_query_map` — see the full set of queries a page already ranks for (reveals whether one page is trying to cover a whole cluster, or a cluster is scattered across pages).
+- `gsc_detect_trends` — surface the rising sub-topics worth folding into the cluster.
+- Before optimizing a page, brainstorm the 5–10 related queries the AI is likely to fan out to, and confirm the page (or a linked cluster page) answers each.
+
 ## GEO Score Audit
 
 Measure content signals correlated with AI citation — a directional heuristic based on available research.
@@ -38,7 +51,7 @@ Measure content signals correlated with AI citation — a directional heuristic 
 
 **Tool:** `seo_geo_score`
 
-**Important caveat:** No AI platform (Google, OpenAI, Anthropic, Perplexity) publishes a citation scoring standard. This score measures proxy signals — structured data, content structure, E-E-A-T signals, crawler access — that peer-reviewed research (Princeton KDD 2024) found correlated with higher inclusion in AI-generated answers. A higher score means you've improved measurable factors; it does not guarantee AI citation.
+**Important caveat:** this score is **directional**. It measures proxy signals — structured data, content structure, E-E-A-T, crawler access — that peer-reviewed research (Princeton KDD 2024) found correlated with higher inclusion in AI answers. A higher score means improved factors, not guaranteed citation. (Full framing under *AI Visibility Score → How to report the score to the user*.)
 
 **What it measures (10 categories):**
 - Structured Data — schema markup that helps AI parse your content
@@ -53,6 +66,10 @@ Measure content signals correlated with AI citation — a directional heuristic 
 - Query Optimization — how well the page matches conversational queries
 
 **Interpreting results:** The tool returns per-category scores with specific failed checks and recommendations. Fix the lowest-scoring categories with the highest weight first. Re-run monthly and pair with manual testing (run target queries in ChatGPT, Perplexity, and Google AI Overviews to see if your content appears).
+
+**Page-type-aware scoring:** checks that don't apply to the page (e.g. Article freshness on a homepage) are marked N/A and excluded from **both** the numerator and the denominator; the output shows the applicable denominator (`Applicable: X/Y`). A homepage scores lower but honest as a result — if a score dropped after this landed, that's the correction, not a regression.
+
+**Language-aware (EN + ES):** the scorer detects the vertical, page type, entity pages, and content signals (definition patterns, source attribution, statistics, author bylines, listicle/summary structure) in both English and Spanish. A well-optimized Spanish page is scored fairly; a low score reflects a real gap, not an English-only heuristic missing localized copy.
 
 ## E-E-A-T Score Audit
 
@@ -73,6 +90,8 @@ Measure the Experience, Expertise, Authoritativeness, and Trustworthiness signal
 2. Include first-party data or original research where possible
 3. Add `Person` schema to author bio pages with `sameAs` links to LinkedIn/professional profiles
 4. Ensure an About page with named team members exists
+
+> **Localized sites:** About/team, contact, privacy, and press pages are detected schema-first (`AboutPage`/`ProfilePage`/`ContactPage`, `Organization.contactPoint`) and then by multilingual slug/text (`/acerca-de`, `/nuestro-equipo`, `/contacto`, `/prensa`… across EN/ES/FR/DE/PT/IT). A Spanish site does not need to rename its URLs to `/about` to get credit — don't recommend anglicizing them.
 
 ## llms.txt Check
 
@@ -102,7 +121,21 @@ When the file is missing OR scores below 40/100, the tool automatically fetches 
 4. Copy the generated content → save as `/llms.txt` at the site root
 5. Run `seo_robots_validator` to confirm AI bots (GPTBot, ClaudeBot, PerplexityBot) are not blocked
 
-**What llms.txt is:** A format proposed by Jeremy Howard / Answer.AI in September 2024 that gives AI systems a curated summary of your site's content and structure. None of the major AI platforms (Google, OpenAI, Anthropic, Perplexity) have publicly confirmed they use it for citation decisions. Google's official AI Optimization Guide (December 2025) explicitly tells site owners they can **ignore** AI-specific markup files. Add it only if a specific partner integration requests it — do not prioritize it over inline citations, content quality, and AI crawler access, which have stronger evidence behind them.
+**What llms.txt is:** A format proposed by Jeremy Howard / Answer.AI in September 2024 that gives AI systems a curated summary of your site's content and structure. None of the major AI platforms (Google, OpenAI, Anthropic, Perplexity) have publicly confirmed they use it for citation decisions. Google's official AI optimization guide (May 2026) explicitly tells site owners they can **ignore** AI-specific markup files. Add it only if a specific partner integration requests it — do not prioritize it over inline citations, content quality, and AI crawler access, which have stronger evidence behind them.
+
+## Machine-Readable Files for AI Agents
+
+Beyond `llms.txt`, autonomous AI agents increasingly evaluate and compare products *before* a human visits the site. If pricing, specs, or capabilities are locked behind JavaScript rendering or a "contact sales" wall, the agent can't read them and recommends a competitor whose data it can parse.
+
+**Same caveat as llms.txt:** Google says these files are **not required** for AI Overviews / AI Mode. Their value is with non-Google engines (ChatGPT, Claude, Perplexity) and agentic buyers — they don't hurt Google, they're just clean, parseable data.
+
+| File | Purpose |
+|------|---------|
+| `/pricing.md` (or `/pricing.txt`) | Tiers, limits, and prices in plain text an LLM can parse with no rendering or login. Use consistent units; keep it in sync with the real pricing page. |
+| `/.well-known/*` catalogs | Machine-readable capability/entry-point manifests (e.g. an AI/tool catalog derived from the live tool list so it can't drift). |
+| **OKF** (`/okf/`) | Open Knowledge Format, Google-backed spec (June 2026) representing site content as cross-linked Markdown with YAML frontmatter. **No confirmed AI-search ranking signal today** — treat it as protocol-layer registration like early schema.org. Optional; skip unless a partner asks. |
+
+**Agentic accessibility (what actually matters most here):** render meaningful content without heavy JS gymnastics, use semantic HTML (`<main>`, `<nav>`, `<article>`, proper heading order, `alt` text), keep a clean accessibility tree, and put anything a buying agent needs — pricing, specs, contact — on a public, indexable page. Confirm AI crawler access with `seo_robots_validator`.
 
 ## AI Visibility Score
 
@@ -114,8 +147,10 @@ Get a composite 0–100 score measuring a site's overall AI visibility across th
 
 **What it measures:**
 
-- **L1 Entity Establishment (Knowledge Graph mechanism)** — Wikidata presence, Google Knowledge Graph entity, `Organization`/`LocalBusiness` schema (with `name`, `url`, and `sameAs` to 2+ identity platforms), vertical directory listings, entity-name consistency across `og:site_name` and schema, and an `/llms.txt` file. This is a **gating step, not a ranking step**: AI resolves whether your entity exists before it retrieves anything. A failed L1 limits every other layer. (Note: `FAQPage` was previously listed here — removed after the May 2026 Google deprecation and the Ahrefs 2026 causal study showing no AI citation lift from schema alone.)
-- **L4 Informational Citation (Retrieval mechanism)** — content structure for AI extraction, AI bot access, structured data quality, content density, freshness signals. Research across 1.2M ChatGPT responses shows 44.2% of citations come from the first 30% of a page. An 800-word page gets 50%+ grounding coverage from AI; a 4,000-word page gets just 13%.
+- **L1 Entity Establishment (Knowledge Graph mechanism)** — Wikidata presence, Google Knowledge Graph entity, `Organization`/`LocalBusiness` schema (with `name`, `url`, and `sameAs` to 2+ identity platforms), vertical directory listings, entity-name consistency across `og:site_name` and schema, and an `/llms.txt` file. This is a **gating step, not a ranking step**: AI resolves whether your entity exists before it retrieves anything. A failed L1 limits every other layer. (Note: `FAQPage` was previously listed here — removed after Google's FAQ deprecation and the Ahrefs 2026 causal study showing no AI citation lift from schema alone.)
+- **L4 Informational Citation (Retrieval mechanism)** — content structure for AI extraction, AI bot access, front-loading, definition patterns, question-based headings, statistics density, **named-entity density** (~20.6% in cited text vs ~5–8% normal), and freshness (recency favored within ~60 days for ChatGPT/Perplexity; Google AI Mode tolerates older). Research across 1.2M ChatGPT responses shows 44.2% of citations come from the first 30% of a page. An 800-word page gets 50%+ grounding coverage from AI; a 4,000-word page gets just 13%.
+
+**Language-aware (EN + ES):** vertical detection, entity-page detection (About/team, contact, press), and the L4 content signals work in both English and Spanish, so a localized site is scored fairly rather than defaulting to "generic" / missing.
 
 **Why L2 and L3 are off-tool:** L2 (Entity Depth — what AI "knows" about you from training) and L3 (Category Citation — editorial listicles and review sites) require off-site investment. Use `entity_mentions` for a proxy read on L2 footprint.
 
@@ -126,14 +161,22 @@ Get a composite 0–100 score measuring a site's overall AI visibility across th
 
 **Target score:** 70+ indicates strong on-site signals. Below 40 suggests significant gaps in entity establishment or content structure. These thresholds are directional — no platform has validated them against actual citation rates.
 
+**How to report the score to the user — always frame it as directional:**
+There is no AI equivalent of Google Search Console or Bing Webmaster Tools. No platform (OpenAI, Google, Anthropic, Perplexity) publishes a citation-scoring standard, so this number is a **best-effort heuristic built from public research, not a measurement of truth**. When you present a score:
+- Call it directional/orientative, never definitive. A higher score means improved factors that research *correlates* with citation — not a guarantee.
+- Note that weights and thresholds change as the evidence does, so re-running over time matters more than any single number.
+- Pair it with **manual testing**: have the user run their real target queries in ChatGPT, Perplexity, and Google AI Overviews and check whether they actually appear. That's the closest thing to ground truth available today.
+- For the full methodology, source list, and the honest disclaimer, point them to **thatseoagent.com/how-we-score-ai-visibility**.
+
 **Quick self-test:** Ask ChatGPT *"What is [brand name]?"* — if the answer is vague, hedged, or wrong, L1 entity resolution is failing. That's the fastest proxy for a low score before running the tool.
 
 **High-impact fixes after the audit:**
 - Add `Organization` or `LocalBusiness` schema to the homepage
-- Add `Person` + `sameAs` schema to author bio pages — correlates with 3x higher AI appearance rates
+- Add `Person` + `sameAs` schema to author bio pages to strengthen author authority signals
+- Build out active review profiles (G2, Trustpilot, Yelp — matched to your vertical) — these correlate with ~3x higher ChatGPT citation (ConvertMate)
 - Ensure consistent entity name across all platforms (no "Brand Inc." vs "Brand LLC" variations)
-- Move core content answers to the first 30% of each page
-- Keep key pages in the 600–1,800 word range for optimal AI grounding coverage (the tool's scored sweet spot)
+
+(For the L4 content-structure fixes — first-30% placement, word count, entity density — see the checklist at the end of this skill.)
 
 ## Entity Mentions Audit
 
@@ -190,5 +233,5 @@ Run through this checklist to cover the full L1/L4 baseline:
 - Move the core thesis to the first 30% of each page
 - Add a direct 1–2 sentence answer immediately after each question-based heading
 - Increase entity density: name specific tools, brands, people, data points
-- Target 600–1,800 words per page (the tool's scored grounding sweet spot — it favors concise, dense pages over long ones)
+- Target 800–1,500 words per page (the tool's scored grounding sweet spot — it favors concise, dense pages over long ones)
 - Refresh top pages at least monthly for ChatGPT/Perplexity citation recency signals
