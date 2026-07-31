@@ -27,7 +27,7 @@ gsc_search_analytics      → clicks, impressions, position — compare to prior
 gsc_detect_anomalies      → flag sudden drops in clicks or impressions
 gsc_detect_trends         → identify rising and falling queries over 90 days
 ga4_run_report            → sessions, engagement rate, conversions by channel
-ga4_ai_traffic            → sessions arriving from ChatGPT, Perplexity, Gemini, Claude
+ga4_ai_traffic            → sessions in GA4's own "AI Assistant" channel, by engine
 ```
 
 **What to look for:**
@@ -43,7 +43,7 @@ ga4_ai_traffic            → sessions arriving from ChatGPT, Perplexity, Gemini
 - `ga4_metadata` — discover the dimensions and metrics available for the property, **including its custom ones**, before composing a report (no more guessing field names).
 - `ga4_custom_definitions` — inspect the property's custom dimensions/metrics and their configuration.
 - `ga4_check_compatibility` — validate a set of dimensions + metrics **before** running the report. GA4 forbids some field pairings (e.g. mixing certain event-scoped and session-scoped fields), and a bad combo returns an opaque 400. Pass the same `dimensions` and `metrics` you intend to query; it names exactly which fields clash so you fix the request in one step. Best used on custom fields, or before a large or repeated `ga4_run_report` / `ga4_pivot_report` where a failed call is costly.
-- `ga4_pivot_report` — cross-tabulate metrics (e.g. channel × date, source × landing page) for clearer comparative views than a flat report.
+- `ga4_pivot_report` — cross-tabulate metrics (e.g. channel × date, source × landing page) for clearer comparative views than a flat report. Name in `pivotFields` the dimension(s) you want to group by; every dimension you pass is queried either way, since GA4 requires each defined dimension to be used.
 - If `ga4_run_report` rejects a dimension/metric combination it still returns which field is incompatible — but prefer `ga4_check_compatibility` to catch the clash before the report runs.
 
 ---

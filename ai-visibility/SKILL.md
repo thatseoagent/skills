@@ -218,9 +218,22 @@ Measure how much traffic is arriving from AI platforms — and which platforms a
 **Tool:** `ga4_ai_traffic`
 
 **What it measures:**
-- Sessions from ChatGPT, Perplexity, Gemini, Claude, Copilot, and Bing AI
+- Sessions GA4 itself classified as its **AI Assistant** channel. Google assigns
+  `medium = ai-assistant` when it recognises the referrer as an assistant, and
+  that classification is what the tool counts first.
+- Plus referrals from a supplementary list of AI hosts, for engines Google does
+  not recognise yet. When both contribute, the report says how many sessions
+  came from each, because they are not the same claim.
 - Users per AI source
 - Time period (configurable, default 28 days)
+
+**Bing web search is not AI traffic.** A referral from `bing.com` says a person
+used a search engine, not that they read an AI answer — the referral cannot tell
+you which. Copilot has its own hosts and is counted separately.
+
+**Read it as a floor.** Only visits where the assistant passed a referrer are
+visible at all; a recommendation acted on later arrives as branded search or
+direct. See `references/citations-vs-recommendations.md`.
 
 **Requires:** GA4 connected to the site with a valid property ID.
 

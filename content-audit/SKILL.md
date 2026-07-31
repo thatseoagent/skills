@@ -43,10 +43,23 @@ Audit the core on-page signals for any URL: title tag, meta description, heading
 - Structured data types detected on the page
 
 **Quick wins from this audit:**
-- Title missing primary keyword in first 60 characters → rewrite to lead with the keyword
-- No meta description or truncated at 120 chars → expand to 150–160 chars with a clear CTA
-- Multiple H1s or no H1 → ensure exactly one H1 that matches the page's primary topic
-- No canonical tag → add `<link rel="canonical" href="[self-url]">` to prevent duplicate content issues
+- Title's subject buried at the end → lead with it. Google truncates a title to
+  fit the device width, not to a character count, so there is no number to hit;
+  what matters is that the page's subject survives being cut short.
+- No meta description → write one. Google publishes no length limit and often
+  composes the snippet from the page anyway, but leaving it empty means Google
+  picks an arbitrary sentence. Uniqueness per page matters more than length.
+- No H1 → add one naming the subject. Google states heading order and count do
+  not affect ranking, so **do not** report a second H1 as an SEO defect; it is
+  an accessibility concern for anyone navigating by headings, and belongs in
+  that conversation instead.
+- No canonical tag → usually fine. Google: "none of them are required; your site
+  will likely do just fine without specifying a canonical preference." Raise it
+  only when the page genuinely has duplicates, and then set it explicitly.
+
+**Do not present any of the above as a character count.** The product's report
+does not, and an agent that does contradicts it. See
+`docs/google-search-central-conformance.md` in the main repo.
 
 ## Content Quality Analysis
 
@@ -57,7 +70,10 @@ Assess readability, depth, heading structure, and link density — signals that 
 **Tool:** `seo_content_analysis`
 
 **What it measures:**
-- Word count — thin content flags (typically < 300 words for non-commercial pages)
+- Word count. **Not a ranking threshold.** Google states there is no minimum
+  word count, so report length as an observation ("this page is much shorter
+  than the ones ranking for the query") and never as a defect with a number
+  attached.
 - Readability score (Flesch-Kincaid) — target grade 9–12 for general audiences, grade 12–16 for professional content
 - Heading structure — number of H2/H3 sections, ratio to word count
 - Internal link density — links per 1,000 words
@@ -151,9 +167,13 @@ Run this sequence for a complete page-level content audit:
 ```
 
 **Prioritize fixes in this order:**
-1. Critical on-page issues (missing H1, no canonical, title > 60 chars)
-2. Thin content (< 600 words on pages targeting competitive queries)
-3. Missing high-value schema (FAQ, Product, Article)
+1. Anything that stops the page being indexed or understood at all — no title,
+   no meta description, no H1, no mobile viewport
+2. Content that does not answer the query it targets. Judge it against what
+   ranks, not against a word count
+3. Missing high-value schema (Product, Article, Organization). **Not FAQPage or
+   HowTo** — Google retired those rich results, so proposing them promises an
+   appearance that no longer exists
 4. Content structure improvements (answer capsules, entity density, heading questions)
 
 ---

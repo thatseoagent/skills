@@ -30,8 +30,8 @@ marked `n/a` does not apply to that kind rather than being a gap.
 ## On-page SEO
 
 - [ ] H1 contains the primary keyword exactly as targeted — no paraphrasing
-- [ ] Title tag: primary keyword first, year if time-sensitive, benefit or differentiator, under 60 characters total
-- [ ] Meta description: primary keyword included, specific claim or benefit, CTA verb, 150–160 characters
+- [ ] Title tag: primary keyword first, year if time-sensitive, benefit or differentiator. Front-load it — Google trims the title to fit the device it's shown on, not to a character count, so write so the subject survives being cut rather than counting to 60
+- [ ] Meta description: unique to this page, primary keyword included, specific claim or benefit, CTA verb. Google publishes no length limit and often builds the snippet from the page instead; uniqueness beats length
 - [ ] Primary keyword appears within the first 100 words of body text
 - [ ] H2 headings use secondary and related keywords naturally — no forced phrasing
 - [ ] URL slug: lowercase, hyphenated, keyword-rich, no stop words
@@ -56,7 +56,7 @@ marked `n/a` does not apply to that kind rather than being a gap.
 ## Content structure
 
 - [ ] Answer-first format: the main answer appears in the first paragraph, before any background or context
-- [ ] Clear heading hierarchy: H1 → H2 → H3, no skipped levels
+- [ ] Clear heading hierarchy: H1 → H2 → H3, no skipped levels. This is an accessibility practice (WCAG 2.2 §1.3.1), not a ranking factor — Google states heading order and count don't affect ranking, so don't sell it as SEO
 - [ ] Short paragraphs: 2–3 sentences maximum, no walls of text
 - [ ] At least one comparison table if the content covers multiple options or tools
 - [ ] Bullet or numbered lists for any sequential steps or feature comparisons

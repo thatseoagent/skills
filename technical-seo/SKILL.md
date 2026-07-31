@@ -223,7 +223,7 @@ List, inspect, and submit sitemaps to Google Search Console.
 
 ## Full Site Crawl
 
-BFS-crawl the site to find broken links, orphaned pages, thin content, and duplicate titles at scale.
+BFS-crawl the site to find broken links, orphaned pages, short pages, and duplicate titles at scale.
 
 **When to use:** User wants a comprehensive technical audit across the full site, not just a single page.
 
@@ -231,8 +231,11 @@ BFS-crawl the site to find broken links, orphaned pages, thin content, and dupli
 
 **What it finds:**
 - Broken internal links (4xx, 5xx responses)
-- Pages with thin content (low word count)
-- Duplicate or missing title tags
+- Short pages, reported as an observation and not a defect. Google publishes no
+  minimum word count, so treat a short page as worth a look — does it answer
+  what it targets? — rather than as something to fix by adding words
+- Duplicate or missing title tags. Duplicates are the real finding here: Google
+  asks for a unique title and description per page, and states no length limit
 - Pages buried deep in the site architecture (many hops from the homepage)
 
 **Note:** Crawl results are cached for 1 hour. To re-crawl after fixes, simply call the tool again — the cache will refresh automatically after expiry.
