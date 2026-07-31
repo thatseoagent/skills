@@ -3,6 +3,49 @@
 All notable changes to the That SEO Agent plugin are documented here. This
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.4.0] — 2026-07-31
+
+Two corrections, both found by validating the MCP server against Google's own
+documentation rather than against our assumptions about it.
+
+### Changed
+- **`ai-visibility (1.3.0 → 1.4.0)`** — GA4 classifies AI traffic itself. When it
+  recognises the referrer as an assistant it assigns `medium = ai-assistant`,
+  campaign `(ai-assistant)`, and the **AI Assistant** default channel group.
+  `ga4_ai_traffic` now counts that classification first and falls back to a host
+  list only for engines Google does not recognise yet, so the skill describes it
+  that way and states the split when both contribute. Measured on a live
+  property, the old referral-only reading found 2 of 100 AI sessions.
+  `references/citations-vs-recommendations.md` updated to match: the visible
+  slice is read off Google's channel, and is still a floor.
+- **`audit-cadence (1.1.3 → 1.1.4)`** — same correction to the `ga4_ai_traffic`
+  one-liner. `ga4_pivot_report` gains the note that GA4 requires every defined
+  dimension to be used, so a dimension left out of `pivotFields` is still
+  queried rather than rejected.
+- **`content-audit (1.2.0 → 1.3.0)`**, **`content-checklist (1.2.0 → 1.3.0)`**
+  and **`technical-seo (1.3.0 → 1.3.1)`** — the skills stopped teaching rules the
+  analyzers had already dropped. An agent reading them handed the user advice the
+  product's own report no longer makes, which is worse than never having done the
+  cleanup: the disagreement was internal.
+
+### Removed
+- **Character counts for titles and meta descriptions.** Google truncates a title
+  to fit the device width, not to a count, and publishes no limit for either. The
+  guidance is now to front-load the subject so it survives being cut, and to make
+  each description unique — uniqueness is the part Google actually asks for.
+- **"Exactly one H1" as an SEO defect.** Google states heading order and count do
+  not affect ranking. A missing H1 is still worth raising; a second one is an
+  accessibility matter (WCAG 2.2 §1.3.1) and is now labelled as one, as is
+  heading hierarchy, which was being sold as SEO.
+- **Word-count thresholds** — `< 300 words`, `< 600 words`, and "match the top 3
+  ranking pages ± 10%". Google publishes no minimum. Briefs are scoped by the
+  sub-topics that have to be covered, and a short page is reported as an
+  observation worth a look rather than a defect to fix by adding words.
+- **`HowTo` as a rich result to aim for**, joining `FAQPage`. Google retired
+  both, so proposing them promised an appearance that no longer exists.
+  `content-checklist` already handled `FAQPage` correctly; `HowTo` had been
+  missed.
+
 ## [1.3.0] — 2026-07-30
 
 ### Added

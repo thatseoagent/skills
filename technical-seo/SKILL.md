@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # Technical SEO
