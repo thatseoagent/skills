@@ -1,5 +1,10 @@
 <p align="center">
-  <img src="assets/icon-512.png" alt="That SEO Agent" width="96" height="96">
+    <a href="https://thatseoagent.com?utm_source=github&utm_medium=banner&utm_campaign=that-seo-agent-skills">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/logo-lockup-dark.svg">
+        <img alt="That SEO Agent — Skills" src="assets/logo-lockup.svg">
+      </picture>
+    </a>
 </p>
 
 [![skills.sh](https://skills.sh/b/thatseoagent/skills)](https://skills.sh/thatseoagent/skills)
@@ -7,7 +12,7 @@
 
 # That SEO Agent — Skills
 
-57 SEO tools for any MCP-compatible AI agent. Connects to Google Search Console, GA4, PageSpeed Insights, and your site's technical layer via the Model Context Protocol.
+SEO tools for any MCP-compatible AI agent. Connects to Google Search Console, GA4, PageSpeed Insights, and your site's technical layer via the Model Context Protocol.
 
 ## Install as a plugin (Claude Code & Claude Cowork)
 

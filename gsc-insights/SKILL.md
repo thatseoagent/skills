@@ -1,11 +1,11 @@
 ---
 name: gsc-insights
-description: Extract insights from Google Search Console — quick wins, traffic-drop diagnosis, keyword trends, cannibalization, featured-snippet and SERP-feature opportunities, and query-to-content planning. Use when the user asks about keyword performance, CTR, impressions, or organic search behavior. Uses the thatseoagent MCP.
+description: Extract insights from Google Search Console — quick wins, traffic-drop diagnosis, keyword trends, cannibalization, featured-snippet and SERP-feature opportunities, and query-to-content planning. Use when the user asks about keyword performance, CTR, impressions, or organic search behavior.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # GSC Insights

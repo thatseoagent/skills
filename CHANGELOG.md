@@ -3,6 +3,41 @@
 All notable changes to the That SEO Agent plugin are documented here. This
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.3.0] — 2026-07-30
+
+### Added
+- **Reachability gate guidance** across `site-audit (1.2.2 → 1.3.0)`,
+  `technical-seo (1.2.0 → 1.3.0)`, `ai-visibility (1.2.0 → 1.3.0)`,
+  `content-audit (1.1.0 → 1.2.0)` and `content-checklist (1.1.0 → 1.2.0)`.
+  An audit now starts by confirming the URL returns 2xx; on a non-2xx it reports the
+  status and stops. The content tools enforce this themselves, so the guidance
+  explains the ordering rather than creating it. `seo_crawlability_audit`,
+  `seo_robots_validator` and `seo_security_headers` deliberately still answer on a
+  non-2xx, because their subject is not the page's content.
+- **Page Kind awareness** in the same five skills. What a page owes now follows what
+  the page is: a homepage owes `WebSite` + `Organization` and is not missing
+  `Article` (it is not a dated, authored piece) or `BreadcrumbList` (a site root has
+  no ancestors to list). A check marked `n/a` does not apply to that kind and is not
+  a gap, and GEO scores are normalised per kind so they are not comparable across
+  kinds. The publishing entity may be an `Organization` **or** a `Person`.
+
+### Changed
+- **Descriptions trimmed in all seven skills.** Dropped the trailing "Uses the
+  thatseoagent MCP." — it is already in each skill's `compatibility` field and in the
+  body, and a description is the one place that costs context on every turn.
+- **`content-audit (1.1.0 → 1.2.0)`** no longer claims "getting cited" as a trigger.
+  It collided with `ai-visibility`'s "AI citations", leaving the agent to pick blind
+  between two model-invoked skills. Citations belong to `ai-visibility`.
+- **`audit-cadence (1.1.2 → 1.1.3)`** and **`gsc-insights (1.3.0 → 1.3.1)`** —
+  description trim only.
+
+### Removed
+- **The tool count from the plugin and marketplace descriptions and the README.**
+  They advertised 57; the registry exposes 58. Rather than correct a number that
+  goes stale on the next tool, the count is gone — the same call made for the
+  website copy. `docs/mcp.md` in the server repo remains the one place that states
+  an exact figure.
+
 ## [1.2.0] — 2026-07-16
 
 ### Added

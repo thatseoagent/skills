@@ -1,11 +1,11 @@
 ---
 name: ai-visibility
-description: Improve how a brand appears in AI-generated answers (ChatGPT, Perplexity, Google AI Overviews, Claude, Gemini). Use when the user asks about GEO/generative-engine optimization, AI citations, E-E-A-T signals, llms.txt, AI-crawler access, AI engine traffic, or brand entity visibility. Uses the thatseoagent MCP.
+description: Improve how a brand appears in AI-generated answers (ChatGPT, Perplexity, Google AI Overviews, Claude, Gemini). Use when the user asks about GEO/generative-engine optimization, AI citations, E-E-A-T signals, llms.txt, AI-crawler access, AI engine traffic, or brand entity visibility.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # AI Visibility
@@ -14,6 +14,17 @@ metadata:
 
 Workflows for improving how your brand appears in AI-generated answers (ChatGPT, Perplexity, Google AI Overviews, Claude, Gemini) using the thatseoagent MCP.
 
+
+
+**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
+report the status and stop: the content tools refuse it anyway, and a 404 still
+serves a body, so scoring one would describe an error page. Reach for
+`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
+the URL returns. And read which **Page Kind** the audit identified before relaying
+a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
+marked `n/a` does not apply to that kind rather than being a gap.
+
+---
 
 ## The AI Visibility Stack
 

@@ -1,11 +1,11 @@
 ---
 name: technical-seo
-description: Diagnose and fix technical SEO — crawlability, indexing and coverage, canonical tags, redirect chains, robots.txt, hreflang, security headers, sitemaps, URL inspection, and crawl budget. Use for site crawls or indexing problems. Uses the thatseoagent MCP.
+description: Diagnose and fix technical SEO — crawlability, indexing and coverage, canonical tags, redirect chains, robots.txt, hreflang, security headers, sitemaps, URL inspection, and crawl budget. Use for site crawls or indexing problems.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Technical SEO
@@ -14,6 +14,17 @@ metadata:
 
 Workflows for diagnosing and fixing technical SEO issues using the thatseoagent MCP.
 
+
+
+**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
+report the status and stop: the content tools refuse it anyway, and a 404 still
+serves a body, so scoring one would describe an error page. Reach for
+`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
+the URL returns. And read which **Page Kind** the audit identified before relaying
+a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
+marked `n/a` does not apply to that kind rather than being a gap.
+
+---
 
 ## Full Crawlability Audit
 

@@ -1,11 +1,11 @@
 ---
 name: audit-cadence
-description: A repeatable 14-day SEO monitoring cadence that catches ranking drops, index-coverage errors, cannibalization, and traffic anomalies before they compound. Use when the user wants an ongoing or scheduled SEO review routine, or to track changes over time. Uses the thatseoagent MCP.
+description: A repeatable 14-day SEO monitoring cadence that catches ranking drops, index-coverage errors, cannibalization, and traffic anomalies before they compound. Use when the user wants an ongoing or scheduled SEO review routine, or to track changes over time.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.2"
+  version: "1.1.3"
 ---
 
 # Audit Cadence

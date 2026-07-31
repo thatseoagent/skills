@@ -5,14 +5,14 @@
 		"url": "https://thatseoagent.com"
 	},
 	"metadata": {
-		"description": "Official That SEO Agent plugin — 57 SEO tools for Claude across Google Search Console, GA4, PageSpeed Insights, and AI visibility."
+		"description": "Official That SEO Agent plugin — SEO tools for Claude across Google Search Console, GA4, PageSpeed Insights, and AI visibility."
 	},
 	"plugins": [
 		{
 			"name": "thatseoagent",
 			"source": "./",
 			"category": "seo",
-			"description": "57 SEO tools for Claude across Google Search Console, GA4, PageSpeed Insights, and AI visibility. Bundles the That SEO Agent MCP server with OAuth auto-connect."
+			"description": "SEO tools for Claude across Google Search Console, GA4, PageSpeed Insights, and AI visibility. Bundles the That SEO Agent MCP server with OAuth auto-connect."
 		}
 	]
 }

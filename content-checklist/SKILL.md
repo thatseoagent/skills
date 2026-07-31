@@ -1,11 +1,11 @@
 ---
 name: content-checklist
-description: A pre-publish checklist verifying an article, blog post, or landing page meets SEO, content-quality, schema, and copy standards before it goes live. Use when the user is about to publish or wants a final pre-launch review. Uses the thatseoagent MCP.
+description: A pre-publish checklist verifying an article, blog post, or landing page meets SEO, content-quality, schema, and copy standards before it goes live. Use when the user is about to publish or wants a final pre-launch review.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Content Checklist
@@ -13,6 +13,17 @@ metadata:
 > **Requires** the thatseoagent MCP connected — [setup instructions](https://thatseoagent.com/en/mcp).
 
 Nothing gets published without passing every item in this list. Run the sections in order — each builds on the one before it. After the manual checks, run the tools in the final section against the live or staging URL.
+
+---
+
+
+**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
+report the status and stop: the content tools refuse it anyway, and a 404 still
+serves a body, so scoring one would describe an error page. Reach for
+`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
+the URL returns. And read which **Page Kind** the audit identified before relaying
+a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
+marked `n/a` does not apply to that kind rather than being a gap.
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 name: content-audit
-description: Audit and improve page-level SEO — on-page signals (title, meta, headings, canonical), content quality and readability, and structured data (schema/JSON-LD). Use for single-page optimization or diagnosing why a page isn't ranking or getting cited. Uses the thatseoagent MCP.
+description: Audit and improve page-level SEO — on-page signals (title, meta, headings, canonical), content quality and readability, and structured data (schema/JSON-LD). Use for single-page optimization or diagnosing why a page isn't ranking.
 license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Content Audit
@@ -14,6 +14,17 @@ metadata:
 
 Workflows for analyzing and improving on-page SEO, content quality, and structured data using the thatseoagent MCP.
 
+
+
+**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
+report the status and stop: the content tools refuse it anyway, and a 404 still
+serves a body, so scoring one would describe an error page. Reach for
+`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
+the URL returns. And read which **Page Kind** the audit identified before relaying
+a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
+marked `n/a` does not apply to that kind rather than being a gap.
+
+---
 
 ## On-Page SEO Analysis
 
