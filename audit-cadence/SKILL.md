@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.1.4"
+  version: "1.2.0"
 ---
 
 # Audit Cadence
@@ -68,14 +68,14 @@ seo_hreflang_validator         → validate hreflang for multilingual sites (if 
 ### Days 6–8 — Content and keyword health
 
 ```
-gsc_detect_quick_wins          → pages just outside top 10 with high impression volume
+gsc_detect_quick_wins          → QUERIES with high impressions and CTR below par for their position
 gsc_detect_cannibalization     → competing pages splitting clicks for the same queries
 gsc_detect_featured_snippets   → queries where you're close to or losing a featured snippet
 seo_content_analysis           → readability, heading structure, internal link density
 ```
 
 **What to look for:**
-- Quick wins: pages ranking positions 8–15 with 500+ impressions — these need a targeted content pass
+- Quick wins: queries ranking positions 8–15 with 500+ impressions. The tool returns queries, not pages, and reads one window with no previous-period comparison — map a query to its page with `gsc_page_query_map` (one call per site, not per page) before rewriting anything, and ask `gsc_detect_trends` or `gsc_detect_lost_queries` what changed
 - Cannibalization: two or more pages competing for the same query → consolidate or differentiate
 - Featured snippet opportunities: queries where you hold position 1–3 but don't own the snippet → restructure the answer
 
@@ -103,7 +103,7 @@ seo_security_headers                     → security headers grade
 seo_geo_score              → run on top 5 pages by organic traffic
 seo_eeat_score             → homepage + top landing pages
 ai_visibility_score        → composite L1+L4 score
-entity_mentions            → brand footprint check across Wikipedia, Wikidata, Reddit
+entity_mentions            → brand footprint across Wikipedia, Wikidata, Reddit. THREE states per platform, not two: present, absent, and NOT EVALUATED when the platform refused us (Reddit rate-limits unauthenticated search; LinkedIn answers HTTP 999). Never turn a not-evaluated into a missing mention
 ```
 
 **What to look for:**
@@ -115,12 +115,12 @@ entity_mentions            → brand footprint check across Wikipedia, Wikidata,
 ### Day 14 — Report and tasks
 
 ```
-run_site_audit             → refresh the full audit baseline (cache-first: returns the last audit if <7 days old, otherwise triggers a background refresh — call again in ~60s)
+run_site_audit             → refresh the full audit baseline (cache-first: returns the last audit if <7 days old, otherwise triggers a background refresh — call again in ~60s). It can also answer with a refresh already in progress, a spent refresh limit, a site that refused to be read (the pipeline stops at the reachability gate and returns a curl line), or a Site-Limit refusal. Each is an answer, not an error: relay it in one line and do not retry into it
 create_shared_report       → generate a shareable snapshot for stakeholders (auto-refreshes first if the audit is stale; the public link expires in 14 days)
 create_task (×N)           → convert the top 3–5 findings into tracked tasks for the next cycle (each call needs siteUrl + task; add url for page-level fixes)
 ```
 
-**Note:** `create_shared_report` guarantees a fresh audit backs the report — if the latest is missing, older than 7 days, or incomplete it runs `run_site_audit` itself first, and if a refresh is already in progress it asks you to retry in ~60s rather than snapshotting stale data. Running the cadence's other tools first is still good practice, but the report is never built from an outdated audit.
+**Note:** `create_shared_report` refreshes first when it has to — if the latest audit is missing, older than 7 days, or incomplete it runs `run_site_audit` itself, and if a refresh is already in progress it asks you to retry in ~60s rather than snapshotting stale data. It is **not** a freshness guarantee: when the refresh is blocked, because the site's refresh limit is spent or the site refused to be read, the report is built from the last audit that succeeded, with the reason and that audit's date stated in the output. Read that line before telling a stakeholder the link is current.
 
 **Task params reminder:** `create_task` takes `siteUrl` (the same domain you pass to `run_site_audit`, e.g. `example.com`; a site `siteId` UUID also works) plus `task`; `url` is optional for page-specific items. To list or close tasks, `get_tasks` takes `siteUrl`, and `complete_task` / `delete_task` take the per-task `taskId` returned by those calls.
 

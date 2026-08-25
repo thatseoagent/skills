@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Content Checklist
@@ -17,13 +17,14 @@ Nothing gets published without passing every item in this list. Run the sections
 ---
 
 
-**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
-report the status and stop: the content tools refuse it anyway, and a 404 still
-serves a body, so scoring one would describe an error page. Reach for
-`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
-the URL returns. And read which **Page Kind** the audit identified before relaying
-a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
-marked `n/a` does not apply to that kind rather than being a gap.
+**Gate first.** An audit starts by confirming the URL returns 2xx: a 404 still serves a
+body, so the content tools refuse a non-2xx rather than score an error page. A non-2xx is
+still answerable — `seo_crawlability_audit` answers whatever the URL returns, and
+`seo_robots_validator` and `seo_security_headers` do too, since robots.txt and response
+headers do not depend on the page. Run those and name what you ran in one line. Then read
+the **Page Kind** the audit identified before relaying a gap: a homepage owes `WebSite` +
+`Organization`, not `Article`, and a check marked `n/a` does not apply to that kind rather
+than being a gap.
 
 ---
 
@@ -72,7 +73,8 @@ marked `n/a` does not apply to that kind rather than being a gap.
 - [ ] No hedging language where a direct statement works — "X is" not "X might be"
 - [ ] Hook in the first sentence: a specific result, a number, or a direct claim
 - [ ] No keyword stuffing — primary keyword used naturally, not forced into every paragraph
-- [ ] No AI-tell patterns: em dashes, overused verbs (delve, leverage, utilize), overused adjectives (robust, comprehensive, seamless), boilerplate openers ("In today's..."), and empty intensifiers. See `references/ai-writing-detection.md` (Spanish copy: no em dashes at all)
+- [ ] **Em dashes.** Spanish (`es`) copy uses none at all — commas, colons or parentheses instead. English copy keeps them for rare, deliberate emphasis; more than one per page means revise. This is the house rule, and it is the most reliable AI tell there is
+- [ ] No other AI-tell patterns — overused verbs, boilerplate openers, empty intensifiers. `references/ai-writing-detection.md` lists each one with its replacement; read it when editing the draft, not when checking it off
 
 ---
 
@@ -105,6 +107,10 @@ pagespeed_insights     → confirm the page doesn't regress Core Web Vitals afte
 ```
 
 If any tool returns a failing check, fix it before the article goes live.
+
+**A few days after it goes live**, once Google has crawled it: `gsc_rich_results` reports the rich result types Google actually detected on the URL and any structured-data issues per type, from Search Console's own inspection rather than inferred from the markup. That is the check `seo_schema_detection` cannot make — a page can declare valid schema that Google still declines to use.
+
+**Keep the result.** The three tools above answer about the URL and forget: they live in a temporary cache and are not stored, so next month there is nothing to compare against. When the page belongs to a registered site, `run_page_audit` covers the same ground in one call and persists it, and `get_page_audits` reads it back.
 
 ---
 

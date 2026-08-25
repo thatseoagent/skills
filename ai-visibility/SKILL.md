@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # AI Visibility
@@ -16,13 +16,14 @@ Workflows for improving how your brand appears in AI-generated answers (ChatGPT,
 
 
 
-**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
-report the status and stop: the content tools refuse it anyway, and a 404 still
-serves a body, so scoring one would describe an error page. Reach for
-`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
-the URL returns. And read which **Page Kind** the audit identified before relaying
-a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
-marked `n/a` does not apply to that kind rather than being a gap.
+**Gate first.** An audit starts by confirming the URL returns 2xx: a 404 still serves a
+body, so the content tools refuse a non-2xx rather than score an error page. A non-2xx is
+still answerable — `seo_crawlability_audit` answers whatever the URL returns, and
+`seo_robots_validator` and `seo_security_headers` do too, since robots.txt and response
+headers do not depend on the page. Run those and name what you ran in one line. Then read
+the **Page Kind** the audit identified before relaying a gap: a homepage owes `WebSite` +
+`Organization`, not `Article`, and a check marked `n/a` does not apply to that kind rather
+than being a gap.
 
 ---
 
@@ -50,7 +51,7 @@ Google's AI features (AI Overviews / AI Mode) don't just answer the query the us
 **Implication for the audit:** targeting one page per exact keyword is weaker than covering the whole **topical cluster**. A page that comprehensively answers a parent topic (sub-questions included) is retrievable for the fan-out variants too.
 
 **How to work it with the MCP:**
-- `gsc_page_query_map` — see the full set of queries a page already ranks for (reveals whether one page is trying to cover a whole cluster, or a cluster is scattered across pages).
+- `gsc_page_query_map` — takes a `siteUrl`, not a page, and maps the property's top 15 pages (`maxPages`, up to 100) to their queries in one call. Run it once for the site and read the page you care about out of the result; calling it per page re-runs the same site-wide query each time. It reveals whether one page is trying to cover a whole cluster, or a cluster is scattered across pages.
 - `gsc_detect_trends` — surface the rising sub-topics worth folding into the cluster.
 - Before optimizing a page, brainstorm the 5–10 related queries the AI is likely to fan out to, and confirm the page (or a linked cluster page) answers each.
 
@@ -84,11 +85,13 @@ Measure content signals correlated with AI citation — a directional heuristic 
 
 ## E-E-A-T Score Audit
 
-Measure the Experience, Expertise, Authoritativeness, and Trustworthiness signals on a page or site.
+Measure the Experience, Expertise, Authoritativeness, and Trustworthiness signals **on one page**.
 
 **When to use:** User is in a YMYL (Your Money, Your Life) niche, or wants to improve AI citation credibility signals.
 
 **Tool:** `seo_eeat_score`
+
+**Scope, because the name oversells it.** It scores that one page's own signals — byline, credentials, citations, HTTPS — plus whether the page *links to* About, contact and privacy pages, falling back to the site home only when the page itself links none of them. It does not open the author page or the About page and judge what is on them. So "weak expertise" here means weak signals on this URL, not a thin About page, and the fix is on the URL you scored.
 
 **What it measures:**
 - **Experience** — first-hand experience signals (case studies, personal examples, original data)
@@ -115,8 +118,11 @@ Audit and generate the site's `/llms.txt` file — a proposed convention for AI 
 **What it checks:**
 - Whether `/llms.txt` exists at the domain root (HTTP 200 vs 404)
 - Completeness score (0–100) across four criteria: title heading, description blockquote, 3+ absolute content links, and an `## Optional` section
+- **The links the file declares** — a bounded sample, actually fetched, with the count probed out of the count declared shown in the output. A 200 is not read as a pass: a link that answers with the homepage shell, or redirects to it, is reported broken, because a single-page app answers every unknown path that way. Links it could not reach are scored neither way, and the output says coverage was partial
 - Whether `/llms-full.txt` (extended spec variant) also exists
 - AI bot access via a reminder to run `seo_robots_validator`
+
+**Read the probed fraction before relaying the verdict.** An `llms.txt` that "passes" with a small fraction of its links probed is a smaller claim than the score makes it look.
 
 **What it generates:**
 When the file is missing OR scores below 40/100, the tool automatically fetches the site's real title, meta description, and sitemap URLs to generate a **ready-to-use `llms.txt`** — not a generic placeholder. URLs are categorized into Key Content, Blog, and Documentation sections.
@@ -205,7 +211,9 @@ Check whether the brand is mentioned across the off-site platforms AI systems us
 - **YouTube** — channel or branded video content
 - **GitHub** — repository presence (relevant for developer-facing brands)
 
-**What it returns:** A per-platform status (found/not found), mention count where applicable, and the URL discovered.
+**What it returns:** A per-platform status, mention count where applicable, and the URL discovered.
+
+**Three states per platform, not two.** Present, absent, and **not evaluated** — the last one meaning the platform refused to answer us, not that nothing was found. Reddit rate-limits unauthenticated search hard, and LinkedIn answers HTTP 999 to anything that is not a browser, so a not-evaluated on either is routine and says nothing about the brand. Read the status before concluding anything, and never turn a not-evaluated into a missing footprint on the user's fix list: absence of evidence is a different finding, and reporting it as one tells a brand it is invisible somewhere it is not.
 
 **Why it matters:** AI systems (ChatGPT, Perplexity, Gemini) pull from Wikipedia, Reddit, and crawled web content. A brand absent from these sources has no grounding layer — even well-optimized on-site content won't get cited if the brand isn't recognized as an entity. Building an off-site entity footprint is the highest-leverage long-term AI visibility investment.
 

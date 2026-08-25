@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Site Audit
@@ -15,13 +15,14 @@ metadata:
 Workflows for running full site audits, generating shareable reports, and managing SEO tasks using the thatseoagent MCP.
 
 
-**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
-report the status and stop: the content tools refuse it anyway, and a 404 still
-serves a body, so scoring one would describe an error page. Reach for
-`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
-the URL returns. And read which **Page Kind** the audit identified before relaying
-a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
-marked `n/a` does not apply to that kind rather than being a gap.
+**Gate first.** An audit starts by confirming the URL returns 2xx: a 404 still serves a
+body, so the content tools refuse a non-2xx rather than score an error page. A non-2xx is
+still answerable — `seo_crawlability_audit` answers whatever the URL returns, and
+`seo_robots_validator` and `seo_security_headers` do too, since robots.txt and response
+headers do not depend on the page. Run those and name what you ran in one line. Then read
+the **Page Kind** the audit identified before relaying a gap: a homepage owes `WebSite` +
+`Organization`, not `Article`, and a check marked `n/a` does not apply to that kind rather
+than being a gap.
 
 ---
 
@@ -63,7 +64,19 @@ Get a complete SEO audit across 18+ dimensions — performance, technical, conte
 - Hreflang validation (if applicable)
 - GSC quick wins, anomalies, and trends (if GSC connected)
 
+**Two of those dimensions are weaker inside the audit than the tool that owns them**, and saying which is the difference between a report and a wrong report:
+
+- **Hreflang.** The pipeline calls `seo_hreflang_validator` with `checkBidirectional` and `checkAccessibility` both off, because each one fetches every alternate. So the audit checks language codes, self-reference and x-default, and does **not** check reciprocity or whether the alternates resolve. Never report "hreflang valid" from a Site audit alone; run the tool directly on a page to get those two.
+- **Index coverage.** The pipeline samples 50 sitemap URLs, not the tool's own default of 100. A clean coverage section in an audit is a clean sample of 50.
+
 **Cache behavior:** Results are cached for 7 days. If the audit is fresh, it returns immediately. If stale or missing, it triggers a background refresh — call again in ~60 seconds to get results.
+
+**Four other things it can return instead of an audit**, all of them answers rather than errors — relay them as they come, in one line, and do not retry into them:
+
+- **A refresh is already in progress.** Call again in ~60 seconds. A second call now does not start a second run.
+- **The site's refresh limit is spent.** The message names the minutes until it resets. A call inside that window would not run.
+- **The site would not let us read it** — a firewall or WAF answering 403 to our User-Agent, or a timeout. The pipeline stops at the reachability gate rather than recording the same block for every check, and returns the status, the URL and a `curl` line to reproduce it. That verdict stands for ~1 hour, and calling again inside it costs the site nothing and changes nothing. A block aimed at a crawler's User-Agent is a finding in its own right — report it as one.
+- **You are over your plan's Site Limit.** Any tool that operates on a Site refuses with a structured over-limit payload whose message names the surplus to free. Read that out and stop. Subdomains and paths of one domain share a slot, so the fix is `deactivate_site` on a domain the user is done with, or an upgrade. `gsc_list_properties`, `ga4_list_properties`, `activate_site`, `deactivate_site` and `sync_gsc_properties` keep working so the state can be seen and resolved.
 
 **Parameters:**
 - `siteUrl` (optional) — a bare domain (e.g. `example.com`), a URL-prefix property (`https://example.com/`), or a domain property (`sc-domain:example.com`). A bare domain is auto-resolved against the account's GSC properties — you don't need the exact format. If omitted, uses your first registered site.
@@ -72,6 +85,25 @@ Get a complete SEO audit across 18+ dimensions — performance, technical, conte
 **Auditing a site you don't have GSC/GA4 access to:** This works. The technical/public checks — PageSpeed, on-page SEO, schema, crawlability, robots/llms.txt, security headers, E-E-A-T, GEO, and the site crawl — run for any reachable URL with no Google connection required. Only the GSC (search analytics, indexing) and GA4 (traffic) sections need access to that specific property. When they can't run, the audit **declares them explicitly** with a "Google data not available" note listing what was skipped and why — instead of silently dropping those sections. So you can audit a competitor or a prospect's site and still get the full technical/content picture.
 
 **For full data coverage:** Connect the site's GSC/GA4 properties with a read-only Google sign-in (the site itself registers automatically the first time a tool runs against it) — that unlocks the search and traffic sections on top of the public checks.
+
+
+## Route, don't ask: site or page
+
+A **site** is a domain or a subdomain: `example.com`, `blog.example.com`. Search Console gives a subdomain its own property, its own queries and its own indexing state, so it gets its own audit and its own history.
+
+A **page** is a URL underneath one: `example.com/es`, `example.com/blog/post-1`. That is `run_page_audit`, not `run_site_audit`.
+
+When the user names a page, audit the page. Do not audit the whole site instead — they asked about one URL, and a site-wide answer looks close enough to a real one that they will not notice the substitution. Say which tool you used, in one line, and move on:
+
+> Ran `run_page_audit` — `/es` is a page of `example.com`.
+
+That is the whole explanation. No description of how sites and pages are stored, no apology, no question back. If they wanted the whole site they will say so.
+
+`run_site_audit` routes a path for you and tells you it did, so calling it with `example.com/es` is not an error — but naming the right tool yourself is clearer for the user reading along.
+
+**Three levels, and this skill produces the first two.** A Site audit (`run_site_audit`) is stored per Site and is what a shared report snapshots. A page audit (`run_page_audit`) is stored per URL and read back with `get_page_audits`; one call covers on-page, content, structured data, crawlability, E-E-A-T, GEO, PageSpeed and per-URL Search Console data. The individual `seo_*` and `pagespeed_insights` results are neither — they live in a temporary cache and are gone by next week, so they answer a question rather than build a history. Reach for the level the user's question is at.
+
+One warning about the Site level: `run_site_audit` is the only verb that registers a Site, and registering one spends a Site-Limit slot. `run_page_audit` deliberately does not — it requires the Site to exist already, so a question about one URL can never quietly cost the user a slot.
 
 
 ## All-Properties Health Check
@@ -101,7 +133,11 @@ Generate a public, branded report URL to share with clients or stakeholders.
 
 **Tool:** `create_shared_report`
 
-`create_shared_report` builds the report from the site's persisted audit and **guarantees it is fresh**: if the latest audit is missing, older than 7 days, or incomplete (a tool failed, or GSC/GA4 was just connected), it runs a full `run_site_audit` first — respecting the per-site refresh limit — then snapshots the result. If a refresh is already in progress, it returns a "try again in ~60s" message instead of producing a report from stale data. A shared link therefore never reflects an outdated audit, so you can call it directly without running `run_site_audit` yourself first.
+`create_shared_report` builds the report from the site's persisted audit and refreshes first when it has to: if the latest audit is missing, older than 7 days, or incomplete (a tool failed, or GSC/GA4 was just connected), it runs a full `run_site_audit` — respecting the per-site refresh limit — then snapshots the result. If a refresh is already in progress, it returns a "try again in ~60s" message instead of building the report from stale data.
+
+**It does not always publish fresh data, and it says so when it doesn't.** When the refresh is blocked — the site's refresh limit is spent, or the site refused to be read — the report is built from the last audit that succeeded, with the reason and that audit's date stated in the output. Only when there is no prior audit at all does the block stop the report entirely. So read what comes back: a link is not by itself proof the underlying audit is current.
+
+You can call it directly — you don't have to run `run_site_audit` yourself first.
 
 **What it creates:**
 - A public `/report/[id]` URL at thatseoagent.com
@@ -131,7 +167,8 @@ Run Google PageSpeed Insights for mobile and desktop scores and Core Web Vitals.
 **What it returns:**
 - Lighthouse scores: Performance, Accessibility, Best Practices, SEO (0–100)
 - Core Web Vitals (field data from CrUX): LCP, CLS, INP, FCP, TTFB with Good/Needs Improvement/Poor ratings
-- Failed audits with display values (e.g., "Reduce unused JavaScript — potential savings: 320 KiB")
+- Failed audits with display values (e.g., "Reduce unused JavaScript — potential savings: 320 KiB") — **the first 10 only**, with the count of the rest, so "10 failed audits" is a floor rather than a total
+- A URL with too little Chrome traffic gets no field data at all and says so. That is an absence of evidence, not a passing grade
 
 **Interpreting scores:**
 - Performance 90+ → Good. 50–89 → Needs work. < 50 → Critical.
@@ -204,7 +241,7 @@ Step 4 (after sharing the report):
                                   (each call needs siteUrl + task; add url for page-level fixes)
 ```
 
-`create_shared_report` guarantees a fresh audit backs the report — it runs `run_site_audit` itself when the latest is stale or missing — so Steps 1–2 are a recommendation, not a prerequisite.
+`create_shared_report` runs `run_site_audit` itself when the latest is stale or missing, so Steps 1–2 are a recommendation rather than a prerequisite. It is not a freshness guarantee: read the output for the line saying which audit backs the report.
 
 **After the audit, drill deeper with specialized skills:**
 - Technical issues → `technical-seo` skill

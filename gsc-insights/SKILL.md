@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.3.1"
+  version: "1.4.0"
 ---
 
 # GSC Insights
@@ -24,10 +24,12 @@ Find high-impression keywords with low CTR — the fastest optimization opportun
 **Workflow:**
 1. Run `gsc_detect_quick_wins` with the site's GSC property URL (`siteUrl`), plus a date range (`startDate` / `endDate`, both `YYYY-MM-DD`).
 2. The tool returns keywords above the `minImpressions` threshold (default: 50) where CTR is underperforming relative to position. Narrow the rank band with `positionMin` / `positionMax` if needed.
-3. For each opportunity: the page ranking, the keyword, current CTR vs expected CTR at that position.
+3. For each opportunity: the query, its impressions, current CTR vs expected CTR at that position, and the potential clicks at the target CTR.
 4. Prioritize by impressions × CTR gap — the highest-volume misses come first.
 
-**What to do with the results:** Rewrite title tags and meta descriptions for the top 5–10 pages. The keyword is already getting eyes — the problem is the click.
+**It returns queries, not pages, and one window, not two.** The pull behind it is `dimensions: ["query"]` over a single `startDate`/`endDate`, so nothing in its output names a URL and nothing in it can tell you what moved. Map a query back to its page with `gsc_page_query_map` before rewriting anything, and use `gsc_detect_trends` or `gsc_detect_lost_queries` for the question about change — those are the tools that take two periods.
+
+**What to do with the results:** Rewrite the title tag and meta description on the page each top query maps to. The keyword is already getting eyes — the problem is the click.
 
 
 ## From Data to Content Plan
@@ -45,7 +47,7 @@ The stage decides the content type and the CTA. Read the query's modifier:
 | Decision | "pricing", "reviews", "demo", "trial" | Product/pricing page; specifics, no fluff |
 | Implementation | "templates", "examples", "tutorial", "setup", "how to use" | Tutorial / template with standalone value |
 
-A page ranking for queries from *different* stages (visible in `gsc_page_query_map`) usually lacks focus — split or re-target it.
+A page ranking for queries from *different* stages usually lacks focus — split or re-target it. `gsc_page_query_map` is what shows the spread: it takes a `siteUrl`, not a page, and maps the property's top 15 pages to their queries in one call (`maxPages` raises it, up to 100), so run it once for the site rather than once per page.
 
 ### Prioritize the backlog
 
@@ -173,7 +175,7 @@ Focused analyses on top of search analytics — each slices the same GSC data th
 - **`gsc_search_appearance`** — performance broken down by SERP feature (rich result, video, AMP, review snippet…). Use to see which rich results actually drive clicks.
 - **`gsc_device_gap`** — queries where the site ranks worse on mobile than desktop. Use when mobile traffic underperforms or for a mobile-first ranking review.
 - **`gsc_country_opportunity`** — countries with high impressions but low CTR — untapped international demand. Use for international SEO prioritization.
-- **`gsc_page_query_map`** — maps each top page to the queries it ranks for. Use to spot pages that lack focus (ranking for many unrelated intents) vs well-targeted pages.
+- **`gsc_page_query_map`** — takes a `siteUrl` and maps the property's top 15 pages (`maxPages`, up to 100) to their top queries (`queriesPerPage`, default 5). Use to spot pages that lack focus (ranking for many unrelated intents) vs well-targeted pages, and to put a page behind a query the query-level tools returned. One call per site, not per page.
 - **`gsc_page_changes`** — pages that newly started, or stopped, getting impressions between two periods. Page-level companion to `gsc_detect_lost_queries`; use to catch pages gained or lost after a deploy or migration.
 
 

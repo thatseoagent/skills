@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Content Audit
@@ -14,15 +14,20 @@ metadata:
 
 Workflows for analyzing and improving on-page SEO, content quality, and structured data using the thatseoagent MCP.
 
+**Keep the result.** Every tool in this skill answers about a URL and forgets: the `seo_*` and `pagespeed_insights` results live in a temporary cache and are not stored. When the page belongs to a site the user has registered, run `run_page_audit` on it instead — one call covers on-page, content, structured data, crawlability, E-E-A-T, GEO, PageSpeed and per-URL Search Console data, and the result persists, so `get_page_audits` can show it again next week and the change is comparable. Use the individual tools below for a page on a site the user has not registered, or when only one dimension is in question. Say which one you used, in one line, and carry on.
+
+`run_page_audit` also deliberately does **not** register a Site, so it never quietly spends a Site-Limit slot the way `run_site_audit` does. It requires the Site to exist already.
 
 
-**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
-report the status and stop: the content tools refuse it anyway, and a 404 still
-serves a body, so scoring one would describe an error page. Reach for
-`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
-the URL returns. And read which **Page Kind** the audit identified before relaying
-a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
-marked `n/a` does not apply to that kind rather than being a gap.
+
+**Gate first.** An audit starts by confirming the URL returns 2xx: a 404 still serves a
+body, so the content tools refuse a non-2xx rather than score an error page. A non-2xx is
+still answerable — `seo_crawlability_audit` answers whatever the URL returns, and
+`seo_robots_validator` and `seo_security_headers` do too, since robots.txt and response
+headers do not depend on the page. Run those and name what you ran in one line. Then read
+the **Page Kind** the audit identified before relaying a gap: a homepage owes `WebSite` +
+`Organization`, not `Article`, and a check marked `n/a` does not apply to that kind rather
+than being a gap.
 
 ---
 
@@ -57,9 +62,10 @@ Audit the core on-page signals for any URL: title tag, meta description, heading
   will likely do just fine without specifying a canonical preference." Raise it
   only when the page genuinely has duplicates, and then set it explicitly.
 
-**Do not present any of the above as a character count.** The product's report
-does not, and an agent that does contradicts it. See
-`docs/google-search-central-conformance.md` in the main repo.
+**Report the subject, not a character count.** Say whether the page's subject
+survives truncation and whether the description is unique to the page; a number
+of characters is a claim Google does not make, and the product's own report does
+not make it either.
 
 ## Content Quality Analysis
 
@@ -160,6 +166,11 @@ Generate valid JSON-LD structured data markup ready to paste into a page.
 Run this sequence for a complete page-level content audit:
 
 ```
+run_page_audit          → all of the below in one stored call, for a page on a
+                          registered site. Read it back later with get_page_audits
+
+— or, for an unregistered site or a single question —
+
 1. seo_analyze_page     → on-page signals: title, meta, headings, canonical
 2. seo_content_analysis → content depth, readability, link density
 3. seo_schema_detection → existing structured data and validation issues

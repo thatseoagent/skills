@@ -1,0 +1,18 @@
+{
+	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+	"name": "com.thatseoagent/seo",
+	"title": "That SEO Agent",
+	"description": "SEO analysis MCP: Google Search Console, GA4, PageSpeed Insights, and site audits for properties you own.",
+	"version": "1.5.0",
+	"websiteUrl": "https://thatseoagent.com",
+	"repository": {
+		"url": "https://github.com/thatseoagent/skills",
+		"source": "github"
+	},
+	"remotes": [
+		{
+			"type": "streamable-http",
+			"url": "https://thatseoagent.com/api/mcp"
+		}
+	]
+}

@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires the thatseoagent MCP server connected. Get your API key at thatseoagent.com.
 metadata:
   author: thatseoagent
-  version: "1.3.1"
+  version: "1.4.0"
 ---
 
 # Technical SEO
@@ -16,13 +16,14 @@ Workflows for diagnosing and fixing technical SEO issues using the thatseoagent 
 
 
 
-**Gate first.** An audit starts by confirming the URL returns 2xx. On a non-2xx,
-report the status and stop: the content tools refuse it anyway, and a 404 still
-serves a body, so scoring one would describe an error page. Reach for
-`seo_crawlability_audit` to diagnose a URL that looks broken — it answers whatever
-the URL returns. And read which **Page Kind** the audit identified before relaying
-a gap: a homepage owes `WebSite` + `Organization`, not `Article`, and a check
-marked `n/a` does not apply to that kind rather than being a gap.
+**Gate first.** An audit starts by confirming the URL returns 2xx: a 404 still serves a
+body, so the content tools refuse a non-2xx rather than score an error page. A non-2xx is
+still answerable — `seo_crawlability_audit` answers whatever the URL returns, and
+`seo_robots_validator` and `seo_security_headers` do too, since robots.txt and response
+headers do not depend on the page. Run those and name what you ran in one line. Then read
+the **Page Kind** the audit identified before relaying a gap: a homepage owes `WebSite` +
+`Organization`, not `Article`, and a check marked `n/a` does not apply to that kind rather
+than being a gap.
 
 ---
 
@@ -34,7 +35,7 @@ The fastest way to surface critical technical issues: canonical conflicts, redir
 
 **Workflow:**
 1. Run `seo_crawlability_audit` with the target URL.
-2. The tool checks canonical tags (HTML vs. HTTP header), redirect chain length, robots meta directives, and indexability status.
+2. The tool checks canonical tags (HTML vs. HTTP header), redirect chains, robots meta directives, and indexability status. It prints the chain itself, hop by hop under `Redirect chain:`, not just the hop count — so "which hops?" is answered by reading its output rather than by requesting the URL yourself.
 3. `criticalIssues` count — fix these first. `warnings` — fix these second.
 
 **Common critical issues:**
@@ -112,6 +113,8 @@ Validate international SEO hreflang tags for correctness and bidirectional consi
 
 **Parameters:** `url` (the page to validate). Optional: `checkBidirectional` (default `true` — verifies referenced pages link back; slower but thorough), `checkAccessibility` (default `true` — checks every hreflang URL is reachable), and `sitemapUrl` (validate hreflang declared in a sitemap).
 
+**Run it directly, not from a Site audit.** `run_site_audit` calls this same validator with `checkBidirectional` and `checkAccessibility` both turned off, because each one fetches every alternate. So an audit's hreflang section checks codes, self-reference and x-default, and cannot speak to reciprocity or reachability — the two checks that need those fetches, and the two most often wrong. "Hreflang valid" from a Site audit alone is a claim the audit did not make.
+
 **What it checks:**
 - Valid language and region codes (ISO 639-1 + ISO 3166-1)
 - Self-referencing hreflang tag on each page
@@ -171,7 +174,7 @@ Understand why pages aren't getting indexed across a large section of the site �
 2. **Served pages from Search Analytics — one cheap, cached query.** Pages that already get impressions are indexed and serving, so they're skipped.
 3. **The "indexable gap" — only this spends inspection budget.** URLs that return 200 but Google isn't serving are the ones that actually need URL Inspection. This gap goes through the daily per-site inspection budget (default 500), so a large site can't burn the day's quota in one run. When the source is a `crawl`, the gap is prioritized by inbound internal links (the site's own importance signal) so the most-linked pages are inspected first; other sources keep sitemap/discovery order.
 
-**Parameters:** `siteUrl`. Optional: `source` — `sitemap` (default — the property's submitted sitemap, auto-discovered when `sitemapUrl` is omitted), `crawl` (full BFS crawl from the homepage, for deeper audits), or `urls` (a manual list in `urls`); `sampleSize` (10–200, default 100); `startDate` / `endDate` for the served-pages window (default last 30 days); `force_refresh` (re-inspect even cached URLs, still bounded by the budget).
+**Parameters:** `siteUrl`. Optional: `source` — `sitemap` (default — the property's submitted sitemap, auto-discovered when `sitemapUrl` is omitted), `crawl` (a BFS crawl from the homepage, bounded by `sampleSize`, for deeper audits), or `urls` (a manual list in `urls`); `sampleSize` (10–200, default 100); `startDate` / `endDate` for the served-pages window (default last 30 days); `force_refresh` (re-inspect even cached URLs, still bounded by the budget).
 
 **Output:** HTTP health counts (with example 404s/redirects), how many pages were skipped as already-served, the inspected gap **grouped by coverage state**, any URLs **deferred** because the daily budget was reached, and a budget meter. Nothing is silently truncated — a partial run is always reported as such.
 
@@ -221,21 +224,32 @@ List, inspect, and submit sitemaps to Google Search Console.
 3. Fix any `CRAWLED_CURRENTLY_NOT_INDEXED` or redirect issues found
 
 
-## Full Site Crawl
+## Single-Page Crawl
 
-BFS-crawl the site to find broken links, orphaned pages, short pages, and duplicate titles at scale.
+Fetch one page and read what it exposes, including the internal links it points to.
 
-**When to use:** User wants a comprehensive technical audit across the full site, not just a single page.
+**When to use:** You want a page's status, metadata and outbound internal links in one call
+instead of three. If the user asks for a site-wide audit, this is not the tool — see the
+note below.
 
 **Tool:** `crawl_site`
 
-**What it finds:**
-- Broken internal links (4xx, 5xx responses)
+**What it returns:**
+- HTTP status, redirect hop count, and the URL the request settled on
+- Title, meta description, canonical, noindex state, H1s, word count
+- **The internal links the page exposes**, listed up to 100. This is the reason to reach
+  for the tool: `seo_analyze_page` and `seo_content_analysis` each report a link *count*,
+  and nothing else in the surface returns the targets
 - Short pages, reported as an observation and not a defect. Google publishes no
   minimum word count, so treat a short page as worth a look — does it answer
   what it targets? — rather than as something to fix by adding words
-- Duplicate or missing title tags. Duplicates are the real finding here: Google
-  asks for a unique title and description per page, and states no length limit
-- Pages buried deep in the site architecture (many hops from the homepage)
 
-**Note:** Crawl results are cached for 1 hour. To re-crawl after fixes, simply call the tool again — the cache will refresh automatically after expiry.
+**There is no site-wide crawl.** The tool fetches exactly one page. Four of its sections
+compare pages against each other — broken links, click depth, duplicate titles, duplicate
+descriptions — and at one page they report `n/a` rather than a misleading pass. For
+site-wide HTTP health (404s, redirects, 5xx) use `gsc_index_coverage_analysis`, which
+crawls the sitemap or up to 200 URLs at zero GSC quota. Duplicate titles across a site are
+not reported by any tool; collect them with `seo_analyze_page` and compare. Google asks for
+a unique title and description per page, and states no length limit.
+
+**Note:** Results are cached for 1 hour. To re-fetch after fixes, call the tool again — the cache refreshes automatically after expiry.
