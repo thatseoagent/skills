@@ -2,7 +2,7 @@
 	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
 	"name": "com.thatseoagent/seo",
 	"title": "That SEO Agent",
-	"description": "SEO analysis MCP: Google Search Console, GA4, PageSpeed Insights, and site audits for properties you own.",
+	"description": "SEO analysis for sites you own: Google Search Console, GA4, PageSpeed, and full site audits.",
 	"version": "1.5.0",
 	"websiteUrl": "https://thatseoagent.com",
 	"repository": {

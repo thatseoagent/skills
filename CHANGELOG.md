@@ -24,9 +24,10 @@ more than the tool delivers.
 - **`mcp.json`** at the root, alongside the existing `.mcp.json`. Cursor
   discovers the former, Claude and Grok Build the latter; both name the same URL
   and neither carries a key.
-- **`server.json`** — the descriptor the official MCP Registry publishes from.
-  Not submitted by this release: the `com.thatseoagent/seo` namespace needs a DNS
-  TXT record proving the domain, which is Ángel's to add.
+- **`server.json`**, published to the official MCP Registry as
+  `com.thatseoagent/seo`. The namespace is the reverse-DNS form of the domain, so
+  it required proving ownership with a `v=MCPv1` TXT record on the apex; the
+  registry is in preview, so treat the listing as reachable rather than stable.
 - **`skills/`, seven symlinks to the folders already at the root.** Cursor,
   Grok Build and the Agent Plugins convention all default to scanning `skills/`.
   Moving the folders there would have broken the Claude plugin, which points at
